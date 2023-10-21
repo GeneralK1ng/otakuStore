@@ -1,0 +1,2 @@
+# otakuStore
+otaku online store
