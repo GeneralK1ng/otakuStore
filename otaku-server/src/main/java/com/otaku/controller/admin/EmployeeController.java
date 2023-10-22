@@ -1,6 +1,7 @@
 package com.otaku.controller.admin;
 
 import com.otaku.constant.JwtClaimsConstant;
+import com.otaku.dto.EmployeeDTO;
 import com.otaku.dto.EmployeeLoginDTO;
 import com.otaku.entity.Employee;
 import com.otaku.properties.JwtProperties;
@@ -8,6 +9,8 @@ import com.otaku.result.Result;
 import com.otaku.service.EmployeeService;
 import com.otaku.utils.JwtUtil;
 import com.otaku.vo.EmployeeLoginVO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +27,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin/employee")
 @Slf4j
+@Api(tags = "员工相关接口")
 public class EmployeeController {
 
     @Autowired
@@ -38,6 +42,7 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/login")
+    @ApiOperation(value = "员工登录")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
 
@@ -67,7 +72,17 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/logout")
+    @ApiOperation(value = "员工退出")
     public Result<String> logout() {
+        return Result.success();
+    }
+
+
+    @PostMapping
+    @ApiOperation(value = "新增员工")
+    public Result save(@RequestBody EmployeeDTO employeeDTO){
+        log.info("新增员工：{}", employeeDTO);
+        employeeService.save(employeeDTO);
         return Result.success();
     }
 
