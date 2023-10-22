@@ -1,16 +1,20 @@
 package com.otaku.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.otaku.constant.MessageConstant;
 import com.otaku.constant.PasswordConstant;
 import com.otaku.constant.StatusConstant;
 import com.otaku.context.BaseContext;
 import com.otaku.dto.EmployeeDTO;
 import com.otaku.dto.EmployeeLoginDTO;
+import com.otaku.dto.EmployeePageQueryDTO;
 import com.otaku.entity.Employee;
 import com.otaku.exception.AccountLockedException;
 import com.otaku.exception.AccountNotFoundException;
 import com.otaku.exception.PasswordErrorException;
 import com.otaku.mapper.EmployeeMapper;
+import com.otaku.result.PageResult;
 import com.otaku.service.EmployeeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -88,6 +93,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.insert(employee);
+    }
+
+    /**
+     * 员工分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+        //select * from employee limit(0,10)
+        //开始分页查询
+        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+
+        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
+
+        long total = page.getTotal();
+        List<Employee> records = page.getResult();
+
+        return new PageResult(total,records);
     }
 
 }

@@ -3,8 +3,10 @@ package com.otaku.controller.admin;
 import com.otaku.constant.JwtClaimsConstant;
 import com.otaku.dto.EmployeeDTO;
 import com.otaku.dto.EmployeeLoginDTO;
+import com.otaku.dto.EmployeePageQueryDTO;
 import com.otaku.entity.Employee;
 import com.otaku.properties.JwtProperties;
+import com.otaku.result.PageResult;
 import com.otaku.result.Result;
 import com.otaku.service.EmployeeService;
 import com.otaku.utils.JwtUtil;
@@ -13,10 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,6 +83,19 @@ public class EmployeeController {
         log.info("新增员工：{}", employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();
+    }
+
+    /**
+     * 员工分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @GetMapping("/page")
+    @ApiOperation(value = "员工分页查询")
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){
+        log.info("员工分页查询参数为：{}",employeePageQueryDTO);
+        PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
+        return Result.success(pageResult);
     }
 
 }
