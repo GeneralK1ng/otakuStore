@@ -20,7 +20,7 @@ public class ProductFlavor implements Serializable {
 
     private Long id;
     //产品id
-    private Long dishId;
+    private Long productId;
 
     //偏好名称
     private String name;
