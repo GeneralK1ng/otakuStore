@@ -2,10 +2,14 @@ package com.otaku.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.otaku.constant.MessageConstant;
+import com.otaku.constant.StatusConstant;
 import com.otaku.dto.ProductDTO;
 import com.otaku.dto.ProductPageQueryDTO;
 import com.otaku.entity.Product;
 import com.otaku.entity.ProductFlavor;
+import com.otaku.exception.DeletionNotAllowedException;
+import com.otaku.mapper.PackageProductMapper;
 import com.otaku.mapper.ProductFlavorMapper;
 import com.otaku.mapper.ProductMapper;
 import com.otaku.result.PageResult;
@@ -27,6 +31,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
     @Autowired
     private ProductFlavorMapper productFlavorMapper;
+    @Autowired
+    private PackageProductMapper packageProductMapper;
     /**
      * 新增产品和对应的偏好
      * @param productDTO
@@ -68,5 +74,37 @@ public class ProductServiceImpl implements ProductService {
         Page<ProductVO> page = productMapper.pageQuery(productPageQueryDTO);
 
         return new PageResult(page.getTotal(),page.getResult());
+    }
+
+    /**
+     * 产品批量删除
+     * @param ids
+     */
+    @Override
+    public void deleteBatch(List<Long> ids) {
+        //判断当前产品是否能够删除——是否存在正在售卖的产品，即 status=1 的产品
+        for (Long id : ids) {
+            Product product = productMapper.getById(id);
+            if (product.getStatus().equals(StatusConstant.ENABLE)){
+                //当前产品处于售卖中
+                throw new DeletionNotAllowedException(MessageConstant.PRODUCT_ON_SALE);
+            }
+        }
+
+        //判断当前产品是否能够删除——当前产品是否被套餐绑定，如过被绑定也无法删除
+        List<Long> packageIds = packageProductMapper.getPackageIdsByProductIds(ids);
+        if (!packageIds.isEmpty()){
+            //当前产品被套餐绑定，无法删除
+            throw new DeletionNotAllowedException(MessageConstant.PRODUCT_BE_RELATED_BY_PACKAGE);
+        }
+
+        //删除产品表当中的产品数据
+        for (Long id : ids) {
+            productMapper.deleteById(id);
+            //删除产品关联的偏好数据
+            productFlavorMapper.deleteByProductId(id);
+
+        }
+
     }
 }

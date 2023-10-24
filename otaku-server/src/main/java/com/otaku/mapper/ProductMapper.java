@@ -6,6 +6,7 @@ import com.otaku.dto.ProductPageQueryDTO;
 import com.otaku.entity.Product;
 import com.otaku.enumeration.OperationType;
 import com.otaku.vo.ProductVO;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -33,4 +34,19 @@ public interface ProductMapper {
      * @return
      */
     Page<ProductVO> pageQuery(ProductPageQueryDTO productPageQueryDTO);
+
+    /**
+     * 根据主键查询产品
+     * @param id
+     * @return
+     */
+    @Select("select * from product where id = #{id}")
+    Product getById(Long id);
+
+    /**
+     * 根据主键删除产品
+     * @param id
+     */
+    @Delete("delete from product where id = #{id}")
+    void deleteById(Long id);
 }

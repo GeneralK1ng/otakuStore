@@ -4,6 +4,8 @@ import com.otaku.dto.ProductDTO;
 import com.otaku.dto.ProductPageQueryDTO;
 import com.otaku.result.PageResult;
 
+import java.util.List;
+
 public interface ProductService {
 
     /**
@@ -19,4 +21,10 @@ public interface ProductService {
      * @return
      */
     PageResult pageQuery(ProductPageQueryDTO productPageQueryDTO);
+
+    /**
+     * 产品批量删除功能
+     * @param ids
+     */
+    void deleteBatch(List<Long> ids);
 }

@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 产品管理
  */
@@ -44,6 +46,22 @@ public class ProductController {
         log.info("产品分页查询：{}", productPageQueryDTO);
         PageResult pageResult = productService.pageQuery(productPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 产品批量删除
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    @ApiOperation(value = "产品批量删除操作")
+    public Result delete(@RequestParam List<Long> ids){
+
+        log.info("产品批量删除：{}",ids);
+
+        productService.deleteBatch(ids);
+
+        return Result.success();
     }
 
 }
