@@ -8,6 +8,7 @@
             values
             (#{name}, #{categoryId}, #{price}, #{purchasePrice}, #{image}, #{description} , #{createTime}, #{updateTime}, #{createUser}, #{updateUser}, #{status})
     </insert>
+
     <select id="pageQuery" resultType="com.otaku.vo.ProductVO">
         select d.* , c.name
         from product d
@@ -26,4 +27,11 @@
         </where>
         order by d.create_time desc
     </select>
+    <delete id="deleteBatch">
+        DELETE FROM product
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

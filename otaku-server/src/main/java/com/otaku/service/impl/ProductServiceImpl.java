@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -93,18 +94,24 @@ public class ProductServiceImpl implements ProductService {
 
         //判断当前产品是否能够删除——当前产品是否被套餐绑定，如过被绑定也无法删除
         List<Long> packageIds = packageProductMapper.getPackageIdsByProductIds(ids);
+        
         if (!packageIds.isEmpty()){
             //当前产品被套餐绑定，无法删除
             throw new DeletionNotAllowedException(MessageConstant.PRODUCT_BE_RELATED_BY_PACKAGE);
         }
 
         //删除产品表当中的产品数据
-        for (Long id : ids) {
+        /*for (Long id : ids) {
             productMapper.deleteById(id);
             //删除产品关联的偏好数据
             productFlavorMapper.deleteByProductId(id);
+        }*/
 
+        // 批量删除产品表中的产品数据
+        if (!ids.isEmpty()) {
+            productMapper.deleteBatch(ids);
+            // 批量删除产品关联的偏好数据
+            productFlavorMapper.deleteByProductIds(ids);
         }
-
     }
 }

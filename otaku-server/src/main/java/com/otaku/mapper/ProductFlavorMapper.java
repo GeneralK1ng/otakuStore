@@ -20,4 +20,10 @@ public interface ProductFlavorMapper {
      */
     @Delete("delete from product_flavor where product_id = #{productId}")
     void deleteByProductId(Long productId);
+
+    /**
+     * 根据产品ID集合批量删除关联的偏好数据
+     * @param productIds
+     */
+    void deleteByProductIds(List<Long> productIds);
 }

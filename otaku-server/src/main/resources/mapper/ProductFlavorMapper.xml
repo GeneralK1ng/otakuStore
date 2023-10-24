@@ -10,4 +10,10 @@
                 (#{pf.productId}, #{pf.name}, #{pf.value})
             </foreach>
     </insert>
+    <delete id="deleteByProductIds">
+        delete from product_flavor where product_id
+        <foreach collection="productIds" open="(" close=")" separator="," item="productId">
+            #{productId}
+        </foreach>
+    </delete>
 </mapper>
