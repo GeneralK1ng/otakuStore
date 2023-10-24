@@ -15,14 +15,14 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DishVO implements Serializable {
+public class ProductVO implements Serializable {
 
     private Long id;
-    //菜品名称
+    //产品名称
     private String name;
-    //菜品分类id
+    //产品分类id
     private Long categoryId;
-    //菜品价格
+    //产品价格
     private BigDecimal price;
     //图片
     private String image;
@@ -34,7 +34,7 @@ public class DishVO implements Serializable {
     private LocalDateTime updateTime;
     //分类名称
     private String categoryName;
-    //菜品关联的口味
+    //产品关联的口味
     private List<ProductFlavor> flavors = new ArrayList<>();
 
     //private Integer copies;

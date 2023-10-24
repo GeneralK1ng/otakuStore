@@ -1,8 +1,11 @@
 package com.otaku.mapper;
 
+import com.github.pagehelper.Page;
 import com.otaku.annotation.AutoFill;
+import com.otaku.dto.ProductPageQueryDTO;
 import com.otaku.entity.Product;
 import com.otaku.enumeration.OperationType;
+import com.otaku.vo.ProductVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -23,4 +26,11 @@ public interface ProductMapper {
      */
     @AutoFill(value = OperationType.INSERT)
     void insert(Product product);
+
+    /**
+     * 产品分页查询
+     * @param productPageQueryDTO
+     * @return
+     */
+    Page<ProductVO> pageQuery(ProductPageQueryDTO productPageQueryDTO);
 }

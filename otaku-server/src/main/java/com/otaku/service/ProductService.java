@@ -1,6 +1,8 @@
 package com.otaku.service;
 
 import com.otaku.dto.ProductDTO;
+import com.otaku.dto.ProductPageQueryDTO;
+import com.otaku.result.PageResult;
 
 public interface ProductService {
 
@@ -9,4 +11,12 @@ public interface ProductService {
      * @param productDTO
      */
     public void saveWithFlavor(ProductDTO productDTO);
+
+
+    /**
+     * 产品分页查询
+     * @param productPageQueryDTO
+     * @return
+     */
+    PageResult pageQuery(ProductPageQueryDTO productPageQueryDTO);
 }

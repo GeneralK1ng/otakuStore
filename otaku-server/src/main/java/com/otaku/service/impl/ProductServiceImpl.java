@@ -1,11 +1,16 @@
 package com.otaku.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.otaku.dto.ProductDTO;
+import com.otaku.dto.ProductPageQueryDTO;
 import com.otaku.entity.Product;
 import com.otaku.entity.ProductFlavor;
 import com.otaku.mapper.ProductFlavorMapper;
 import com.otaku.mapper.ProductMapper;
+import com.otaku.result.PageResult;
 import com.otaku.service.ProductService;
+import com.otaku.vo.ProductVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +53,20 @@ public class ProductServiceImpl implements ProductService {
             //向偏好表插入n条数据
             productFlavorMapper.insertBatch(flavors);
         }
+    }
 
+    /**
+     * 产品分页查询
+     * @param productPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(ProductPageQueryDTO productPageQueryDTO) {
+        //开始分页
+        PageHelper.startPage(productPageQueryDTO.getPage(),productPageQueryDTO.getPageSize());
+        //获取page对象
+        Page<ProductVO> page = productMapper.pageQuery(productPageQueryDTO);
+
+        return new PageResult(page.getTotal(),page.getResult());
     }
 }
