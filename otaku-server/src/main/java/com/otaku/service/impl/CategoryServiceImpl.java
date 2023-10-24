@@ -4,13 +4,12 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.otaku.constant.MessageConstant;
 import com.otaku.constant.StatusConstant;
-import com.otaku.context.BaseContext;
 import com.otaku.dto.CategoryDTO;
 import com.otaku.dto.CategoryPageQueryDTO;
 import com.otaku.entity.Category;
 import com.otaku.exception.DeletionNotAllowedException;
 import com.otaku.mapper.CategoryMapper;
-import com.otaku.mapper.DishMapper;
+import com.otaku.mapper.ProductMapper;
 import com.otaku.mapper.PackageMapper;
 import com.otaku.result.PageResult;
 import com.otaku.service.CategoryService;
@@ -18,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+
 import java.util.List;
 
 /**
@@ -31,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
     @Autowired
-    private DishMapper dishMapper;
+    private ProductMapper productMapper;
     @Autowired
     private PackageMapper packageMapper;
 
@@ -74,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     public void deleteById(Long id) {
         //查询当前分类是否关联了菜品，如果关联了就抛出业务异常
-        Integer count = dishMapper.countByCategoryId(id);
+        Integer count = productMapper.countByCategoryId(id);
         if(count > 0){
             //当前分类下有菜品，不能删除
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);

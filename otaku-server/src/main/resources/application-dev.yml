@@ -1,4 +1,4 @@
-sky:
+otaku:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     host: localhost
@@ -6,3 +6,9 @@ sky:
     database: otaku_store
     username: root
     password: 123456
+
+  alioss:
+    endpoint: oss-cn-hongkong.aliyuncs.com
+    access-key-id: LTAI5t6nuwDLaLTUYarGGjbL
+    access-key-secret: aGU6GEqp3JDASD5g1qE44qEuz46DUw
+    bucket-name: otakustore
