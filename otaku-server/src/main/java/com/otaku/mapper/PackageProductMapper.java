@@ -1,5 +1,7 @@
 package com.otaku.mapper;
 
+import com.otaku.entity.PackageProduct;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -13,4 +15,17 @@ public interface PackageProductMapper {
      * @return
      */
     List<Long> getPackageIdsByProductIds(List<Long> productIds);
+
+    /**
+     * 批量保存套餐和产品的绑定关系
+     * @param packageProducts
+     */
+    void insertBatch(List<PackageProduct> packageProducts);
+
+    /**
+     * 根据套餐ID删除套餐和产品的绑定关系
+     * @param packageId
+     */
+    @Delete("delete from package_product where package_id = #{packageId}")
+    void deleteBySetmealId(Long packageId);
 }

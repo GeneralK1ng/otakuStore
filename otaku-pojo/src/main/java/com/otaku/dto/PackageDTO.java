@@ -1,6 +1,6 @@
 package com.otaku.dto;
 
-import com.otaku.entity.SetmealDish;
+import com.otaku.entity.PackageProduct;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class SetmealDTO implements Serializable {
+public class PackageDTO implements Serializable {
 
     private Long id;
 
@@ -30,7 +30,7 @@ public class SetmealDTO implements Serializable {
     //图片
     private String image;
 
-    //套餐菜品关系
-    private List<SetmealDish> setmealDishes = new ArrayList<>();
+    //套餐产品关系
+    private List<PackageProduct> packageProducts = new ArrayList<>();
 
 }

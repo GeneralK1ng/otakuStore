@@ -9,4 +9,13 @@
                         #{productId}
                 </foreach>
     </select>
+
+    <insert id="insertBatch" parameterType="list">
+        insert into package_product
+        (package_id, product_id, name, price, copies)
+        VALUES
+            <foreach collection="packageProducts" item="pp" separator=",">
+                (#{pp.packageId}, #{pp.productId}, #{pp.name}, #{pp.price}, #{pp.copies})
+            </foreach>
+    </insert>
 </mapper>

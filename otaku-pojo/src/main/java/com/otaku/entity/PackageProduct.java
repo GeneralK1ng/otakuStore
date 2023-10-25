@@ -15,22 +15,22 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SetmealDish implements Serializable {
+public class PackageProduct implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private Long id;
 
     //套餐id
-    private Long setmealId;
+    private Long packageId;
 
-    //菜品id
-    private Long dishId;
+    //产品id
+    private Long productId;
 
-    //菜品名称 （冗余字段）
+    //产品名称 （冗余字段）
     private String name;
 
-    //菜品原价
+    //产品原售价
     private BigDecimal price;
 
     //份数

@@ -1,6 +1,6 @@
 package com.otaku.vo;
 
-import com.otaku.entity.SetmealDish;
+import com.otaku.entity.PackageProduct;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SetmealVO implements Serializable {
+public class PackageVO implements Serializable {
 
     private Long id;
 
@@ -43,6 +43,6 @@ public class SetmealVO implements Serializable {
     //分类名称
     private String categoryName;
 
-    //套餐和菜品的关联关系
-    private List<SetmealDish> setmealDishes = new ArrayList<>();
+    //套餐和产品的关联关系
+    private List<PackageProduct> packageProducts = new ArrayList<>();
 }

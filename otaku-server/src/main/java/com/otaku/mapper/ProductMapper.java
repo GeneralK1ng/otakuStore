@@ -64,4 +64,11 @@ public interface ProductMapper {
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(Product product);
+
+    /**
+     * 动态条件查询产品
+     * @param product
+     * @return
+     */
+    List<Product> list(Product product);
 }

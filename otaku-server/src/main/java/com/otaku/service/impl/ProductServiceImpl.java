@@ -158,4 +158,18 @@ public class ProductServiceImpl implements ProductService {
             productFlavorMapper.insertBatch(flavors);
         }
     }
+
+    /**
+     * 根据分类ID查询产品
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public List<Product> list(Long categoryId) {
+        Product product = Product.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)
+                .build();
+        return productMapper.list(product);
+    }
 }

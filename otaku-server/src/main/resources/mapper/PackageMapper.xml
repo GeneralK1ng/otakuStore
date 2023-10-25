@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.otaku.mapper.PackageMapper">
+
+    <insert id="insert" parameterType="Package" useGeneratedKeys="true" keyProperty="id">
+        insert into package
+        (category_id, name, price, status, description, image, create_time, update_time, create_user, update_user)
+        VALUES
+        (#{categoryId}, #{name}, #{price}, #{status}, #{description}, #{image}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
+    </insert>
+
+    <select id="pageQuery" resultType="com.otaku.vo.PackageVO">
+        select
+            p.*, c.name categoryNmae
+        from
+            package p
+        left join
+            category c
+        on
+            p.category_id = c.id
+        <where>
+            <if test="name != null">
+                and p.name like concat('%',#{}name,'%')
+            </if>
+            <if test="status != null">
+                and p.status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and p.category_id = #{categoryId}
+            </if>
+        </where>
+        order by p.create_time desc
+    </select>
+</mapper>

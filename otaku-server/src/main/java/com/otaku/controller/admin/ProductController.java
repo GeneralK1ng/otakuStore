@@ -2,6 +2,7 @@ package com.otaku.controller.admin;
 
 import com.otaku.dto.ProductDTO;
 import com.otaku.dto.ProductPageQueryDTO;
+import com.otaku.entity.Product;
 import com.otaku.result.PageResult;
 import com.otaku.result.Result;
 import com.otaku.service.ProductService;
@@ -88,6 +89,18 @@ public class ProductController {
         log.info("修改产品信息：{}",productDTO);
         productService.updateWithFlavor(productDTO);
         return Result.success();
+    }
+
+    /**
+     * 根据分类id查询菜品
+     * @param categoryId
+     * @return
+     */
+    @GetMapping("/list")
+    @ApiOperation("根据分类id查询产品")
+    public Result<List<Product>> list(Long categoryId){
+        List<Product> list = productService.list(categoryId);
+        return Result.success(list);
     }
 
 }

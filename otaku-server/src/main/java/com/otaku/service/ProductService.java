@@ -2,6 +2,7 @@ package com.otaku.service;
 
 import com.otaku.dto.ProductDTO;
 import com.otaku.dto.ProductPageQueryDTO;
+import com.otaku.entity.Product;
 import com.otaku.result.PageResult;
 import com.otaku.vo.ProductVO;
 
@@ -41,4 +42,11 @@ public interface ProductService {
      * @param productDTO
      */
     void updateWithFlavor(ProductDTO productDTO);
+
+    /**
+     * 根据分类ID查询产品
+     * @param categoryId
+     * @return
+     */
+    List<Product> list(Long categoryId);
 }
