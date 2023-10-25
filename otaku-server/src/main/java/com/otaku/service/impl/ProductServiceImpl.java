@@ -100,7 +100,7 @@ public class ProductServiceImpl implements ProductService {
             throw new DeletionNotAllowedException(MessageConstant.PRODUCT_BE_RELATED_BY_PACKAGE);
         }
 
-        //删除产品表当中的产品数据
+        //删除产品表当中的产品数据（未优化）
         /*for (Long id : ids) {
             productMapper.deleteById(id);
             //删除产品关联的偏好数据
@@ -112,6 +112,50 @@ public class ProductServiceImpl implements ProductService {
             productMapper.deleteBatch(ids);
             // 批量删除产品关联的偏好数据
             productFlavorMapper.deleteByProductIds(ids);
+        }
+    }
+
+    /**
+     * 根据ID查询产品信息和对应的偏好数据
+     * @param id
+     * @return
+     */
+    @Override
+    public ProductVO getByIdWithFlavor(Long id) {
+        //根据ID查询产品数据
+        Product product = productMapper.getById(id);
+        //根据ID查询偏好数据
+        List<ProductFlavor> productFlavors = productFlavorMapper.getByProductId(id);
+        //将查询到的数据封装到productVO
+        ProductVO productVO = new ProductVO();
+        BeanUtils.copyProperties(product,productVO);
+        productVO.setFlavors(productFlavors);
+
+        return productVO;
+    }
+
+    /**
+     * 根据ID修改产品基本信息和偏好数据
+     * @param productDTO
+     */
+    @Override
+    public void updateWithFlavor(ProductDTO productDTO) {
+
+        Product product = new Product();
+        BeanUtils.copyProperties(productDTO,product);
+
+        //修改产品的基本信息
+        productMapper.update(product);
+        //删除原有的偏好数据
+        productFlavorMapper.deleteByProductId(productDTO.getId());
+        //重新插入偏好数据
+        List<ProductFlavor> flavors = productDTO.getFlavors();
+        if (flavors != null && !flavors.isEmpty()){
+            flavors.forEach(productFlavor -> {
+                productFlavor.setProductId(productDTO.getId()); ;
+            });
+            //向偏好表插入n条数据
+            productFlavorMapper.insertBatch(flavors);
         }
     }
 }

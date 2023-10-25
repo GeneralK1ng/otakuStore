@@ -57,4 +57,11 @@ public interface ProductMapper {
      * @param ids
      */
     void deleteBatch(List<Long> ids);
+
+    /**
+     * 根据ID动态修改产品
+     * @param product
+     */
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Product product);
 }

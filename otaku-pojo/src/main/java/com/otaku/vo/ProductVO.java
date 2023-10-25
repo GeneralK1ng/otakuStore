@@ -24,6 +24,8 @@ public class ProductVO implements Serializable {
     private Long categoryId;
     //产品价格
     private BigDecimal price;
+    //进货价格
+    private BigDecimal purchasePrice;
     //图片
     private String image;
     //描述信息

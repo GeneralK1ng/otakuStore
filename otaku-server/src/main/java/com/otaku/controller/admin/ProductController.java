@@ -5,6 +5,7 @@ import com.otaku.dto.ProductPageQueryDTO;
 import com.otaku.result.PageResult;
 import com.otaku.result.Result;
 import com.otaku.service.ProductService;
+import com.otaku.vo.ProductVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +62,31 @@ public class ProductController {
 
         productService.deleteBatch(ids);
 
+        return Result.success();
+    }
+
+    /**
+     * 根据ID查询产品信息与偏好数据
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation(value = "根据ID查询产品")
+    public Result<ProductVO> getById(@PathVariable Long id){
+        log.info("根据ID查询产品：{}",id);
+        ProductVO productVO = productService.getByIdWithFlavor(id);
+        return Result.success(productVO);
+    }
+
+    /**
+     *修改产品信息
+     * @return
+     */
+    @PutMapping
+    @ApiOperation(value = "修改产品信息")
+    public Result update(@RequestBody ProductDTO productDTO){
+        log.info("修改产品信息：{}",productDTO);
+        productService.updateWithFlavor(productDTO);
         return Result.success();
     }
 
