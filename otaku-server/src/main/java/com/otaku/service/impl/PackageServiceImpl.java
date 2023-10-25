@@ -97,7 +97,49 @@ public class PackageServiceImpl implements PackageService {
             //删除套餐表中的数据
             packageMapper.deleteById(packageId);
             //删除套餐产品关系表中的数据
-            packageProductMapper.deleteBySetmealId(packageId);
+            packageProductMapper.deleteByPackageId(packageId);
         });
+    }
+
+    /**
+     * 根据ID查询套餐和绑定套餐产品关系
+     * @param id
+     * @return
+     */
+    @Override
+    public PackageVO getByIdWithProduct(Long id) {
+        Package apackage = packageMapper.getById(id);
+        List<PackageProduct> packageProducts = packageProductMapper.getByPackageId(id);
+
+        PackageVO packageVO = new PackageVO();
+        BeanUtils.copyProperties(apackage,packageVO);
+        packageVO.setPackageProducts(packageProducts);
+
+        return packageVO;
+    }
+
+    @Override
+    @Transactional
+    public void update(PackageDTO packageDTO) {
+        Package aPackage = new Package();
+        BeanUtils.copyProperties(packageDTO,aPackage);
+
+        //执行update语句，修改套餐表
+        packageMapper.update(aPackage);
+
+        //套餐ID
+        Long packageId = packageDTO.getId();
+
+        //删除套餐和产品之间的关系，操作package_product表，执行delete
+        packageProductMapper.deleteByPackageId(packageId);
+
+        List<PackageProduct> packageProducts = packageDTO.getPackageProducts();
+        packageProducts.forEach(packageProduct -> {
+            packageProduct.setPackageId(packageId);
+        });
+
+        //重新插入套餐和产品的关联关系，操作package_product表，执行insert
+        packageProductMapper.insertBatch(packageProducts);
+
     }
 }

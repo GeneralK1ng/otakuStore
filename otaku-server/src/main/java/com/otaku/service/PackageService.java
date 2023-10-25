@@ -3,6 +3,7 @@ package com.otaku.service;
 import com.otaku.dto.PackageDTO;
 import com.otaku.dto.PackagePageQueryDTO;
 import com.otaku.result.PageResult;
+import com.otaku.vo.PackageVO;
 
 import java.util.List;
 
@@ -25,4 +26,17 @@ public interface PackageService {
      * @param ids
      */
     void deleteBatch(List<Long> ids);
+
+    /**
+     * 根据ID查询套餐和绑定的产品数据
+     * @param id
+     * @return
+     */
+    PackageVO getByIdWithProduct(Long id);
+
+    /**
+     * 修改套餐
+     * @param packageDTO
+     */
+    void update(PackageDTO packageDTO);
 }

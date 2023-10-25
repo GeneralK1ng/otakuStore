@@ -5,6 +5,7 @@ import com.otaku.dto.PackagePageQueryDTO;
 import com.otaku.result.PageResult;
 import com.otaku.result.Result;
 import com.otaku.service.PackageService;
+import com.otaku.vo.PackageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +56,32 @@ public class PackageController {
     @ApiOperation("批量删除套餐")
     public Result delete(@RequestParam List<Long> ids){
         packageService.deleteBatch(ids);
+        return Result.success();
+    }
+
+    /**
+     * 根据id查询套餐，用于修改页面回显数据
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询套餐")
+    public Result<PackageVO> getById(@PathVariable Long id) {
+        PackageVO packageVO = packageService.getByIdWithProduct(id);
+        return Result.success(packageVO);
+    }
+
+    /**
+     * 修改套餐
+     *
+     * @param packageDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改套餐")
+    public Result update(@RequestBody PackageDTO packageDTO) {
+        packageService.update(packageDTO);
         return Result.success();
     }
 }

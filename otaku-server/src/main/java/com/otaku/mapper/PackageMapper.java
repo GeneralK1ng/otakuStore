@@ -49,4 +49,10 @@ public interface PackageMapper {
      */
     @Delete("delete from package where id = #{id}")
     void deleteById(Long packageId);
+
+    /**
+     * 修改套餐基本信息
+     * @param aPackage
+     */
+    void update(Package aPackage);
 }
