@@ -39,4 +39,11 @@ public interface PackageService {
      * @param packageDTO
      */
     void update(PackageDTO packageDTO);
+
+    /**
+     * 套餐起售和停售
+     * @param status
+     * @param id
+     */
+    void startOrStop(Integer status, Long id);
 }

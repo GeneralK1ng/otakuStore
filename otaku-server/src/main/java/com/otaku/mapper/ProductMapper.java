@@ -71,4 +71,13 @@ public interface ProductMapper {
      * @return
      */
     List<Product> list(Product product);
+
+    /**
+     * 套餐的启售和停售
+     * @param packageId
+     * @return
+     */
+    @Select("select p.* from product p left join package_product pp on p.id = pp.product_id where " +
+            "pp.package_id = #{packageId}")
+    List<Product> getByPackageId(Long packageId);
 }

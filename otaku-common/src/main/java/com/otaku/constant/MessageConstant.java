@@ -17,7 +17,7 @@ public class MessageConstant {
     public static final String ADDRESS_BOOK_IS_NULL = "用户地址为空，不能下单";
     public static final String LOGIN_FAILED = "登录失败";
     public static final String UPLOAD_FAILED = "文件上传失败";
-    public static final String SETMEAL_ENABLE_FAILED = "套餐内包含未启售菜品，无法启售";
+    public static final String PACKAGE_ENABLE_FAILED = "套餐内包含未启售产品，无法启售";
     public static final String PASSWORD_EDIT_FAILED = "密码修改失败";
     public static final String PRODUCT_ON_SALE = "售卖中的产品不能删除";
     public static final String PACKAGE_ON_SALE = "售卖中的套餐无法删除";

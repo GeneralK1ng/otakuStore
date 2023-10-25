@@ -8,7 +8,9 @@ import com.otaku.dto.PackageDTO;
 import com.otaku.dto.PackagePageQueryDTO;
 import com.otaku.entity.Package;
 import com.otaku.entity.PackageProduct;
+import com.otaku.entity.Product;
 import com.otaku.exception.DeletionNotAllowedException;
+import com.otaku.exception.PackageEnableFailedException;
 import com.otaku.mapper.PackageMapper;
 import com.otaku.mapper.PackageProductMapper;
 import com.otaku.mapper.ProductMapper;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 套餐业务的接口实现类
@@ -141,5 +144,33 @@ public class PackageServiceImpl implements PackageService {
         //重新插入套餐和产品的关联关系，操作package_product表，执行insert
         packageProductMapper.insertBatch(packageProducts);
 
+    }
+
+    /**
+     * 套餐的启售和停售
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        //套餐正在售出时，判断套餐内是否有停止售卖的产品，如果有则返回“套餐内包含停售产品，无法启售”
+        if (Objects.equals(status, StatusConstant.ENABLE)){
+
+            List<Product> productList = productMapper.getByPackageId(id);
+            if (!productList.isEmpty()){
+                productList.forEach(product -> {
+                    if (StatusConstant.DISABLE.equals(product.getStatus())){
+                        throw new PackageEnableFailedException(MessageConstant.PACKAGE_ENABLE_FAILED);
+                    }
+                });
+            }
+        }
+
+        Package aPackage = Package.builder()
+                .id(id)
+                .status(status)
+                .build();
+
+        packageMapper.update(aPackage);
     }
 }

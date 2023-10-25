@@ -84,4 +84,17 @@ public class PackageController {
         packageService.update(packageDTO);
         return Result.success();
     }
+
+    /**
+     * 套餐起售停售
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("套餐起售停售")
+    public Result startOrStop(@PathVariable Integer status, Long id) {
+        packageService.startOrStop(status, id);
+        return Result.success();
+    }
 }
