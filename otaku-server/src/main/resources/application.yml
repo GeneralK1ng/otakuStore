@@ -12,6 +12,11 @@ spring:
       url: jdbc:mysql://${otaku.datasource.host}:${otaku.datasource.port}/${otaku.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: ${otaku.datasource.username}
       password: ${otaku.datasource.password}
+  redis:
+    host: ${otaku.redis.host}
+    port: ${otaku.redis.port}
+    #password: ${otaku.redis.password}}
+    database: ${otaku.redis.database}
 
 mybatis:
   #mapper配置文件
@@ -24,7 +29,7 @@ mybatis:
 logging:
   level:
     com:
-      sky:
+      otaku:
         mapper: debug
         service: info
         controller: info

@@ -12,3 +12,9 @@ otaku:
     access-key-id: LTAI5t6nuwDLaLTUYarGGjbL
     access-key-secret: aGU6GEqp3JDASD5g1qE44qEuz46DUw
     bucket-name: otakustore
+
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    database: 0

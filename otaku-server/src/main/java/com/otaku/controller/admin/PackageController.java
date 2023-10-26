@@ -18,7 +18,7 @@ import java.util.List;
  * 套餐管理
  */
 @RestController
-@RequestMapping(" /admin/package")
+@RequestMapping("/admin/package")
 @Api(tags = "套餐相关接口")
 @Slf4j
 public class PackageController {
