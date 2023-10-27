@@ -49,4 +49,11 @@ public interface ProductService {
      * @return
      */
     List<Product> list(Long categoryId);
+
+    /**
+     * 条件查询产品和偏好
+     * @param product
+     * @return
+     */
+    List<ProductVO> listWithFlavor(Product product);
 }

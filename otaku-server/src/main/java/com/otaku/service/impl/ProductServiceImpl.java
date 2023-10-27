@@ -172,4 +172,29 @@ public class ProductServiceImpl implements ProductService {
                 .build();
         return productMapper.list(product);
     }
+
+    /**
+     * 条件查询产品和偏好
+     *
+     * @param product
+     * @return
+     */
+    public List<ProductVO> listWithFlavor(Product product) {
+        List<Product> productList = productMapper.list(product);
+
+        List<ProductVO> productVOList = new ArrayList<>();
+
+        for (Product p : productList) {
+            ProductVO productVO = new ProductVO();
+            BeanUtils.copyProperties(p,productVO);
+
+            //根据菜品id查询对应的口味
+            List<ProductFlavor> flavors = productFlavorMapper.getByProductId(p.getId());
+
+            productVO.setFlavors(flavors);
+            productVOList.add(productVO);
+        }
+
+        return productVOList;
+    }
 }

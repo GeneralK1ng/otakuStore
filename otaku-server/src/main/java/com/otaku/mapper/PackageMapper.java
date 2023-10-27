@@ -6,9 +6,12 @@ import com.otaku.dto.PackagePageQueryDTO;
 import com.otaku.entity.Package;
 import com.otaku.enumeration.OperationType;
 import com.otaku.vo.PackageVO;
+import com.otaku.vo.ProductItemVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface PackageMapper {
@@ -55,4 +58,21 @@ public interface PackageMapper {
      * @param aPackage
      */
     void update(Package aPackage);
+
+    /**
+     * 动态条件查询套餐
+     * @param aPackage
+     * @return
+     */
+    List<Package> list(Package aPackage);
+
+    /**
+     * 根据套餐id查询产品选项
+     * @param packageId
+     * @return
+     */
+    @Select("select pp.name, pp.copies, p.image, p.description from " +
+            "package_product pp left join product p on pp.package_id = p.id " +
+            "where pp.package_id = #{packageId}")
+    List<ProductItemVO> getProductItemByPackageId(Long packageId);
 }

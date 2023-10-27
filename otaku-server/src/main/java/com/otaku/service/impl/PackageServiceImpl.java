@@ -17,6 +17,7 @@ import com.otaku.mapper.ProductMapper;
 import com.otaku.result.PageResult;
 import com.otaku.service.PackageService;
 import com.otaku.vo.PackageVO;
+import com.otaku.vo.ProductItemVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,5 +173,26 @@ public class PackageServiceImpl implements PackageService {
                 .build();
 
         packageMapper.update(aPackage);
+    }
+
+    /**
+     * 条件查询
+     * @param aPackage
+     * @return
+     */
+    @Override
+    public List<Package> list(Package aPackage) {
+        List<Package> list = packageMapper.list(aPackage);
+        return list;
+    }
+
+    /**
+     * 根据ID查询产品选项
+     * @param id
+     * @return
+     */
+    @Override
+    public List<ProductItemVO> getProductItemById(Long id) {
+        return packageMapper.getProductItemByPackageId(id);
     }
 }
