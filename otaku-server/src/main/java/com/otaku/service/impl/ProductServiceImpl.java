@@ -6,9 +6,11 @@ import com.otaku.constant.MessageConstant;
 import com.otaku.constant.StatusConstant;
 import com.otaku.dto.ProductDTO;
 import com.otaku.dto.ProductPageQueryDTO;
+import com.otaku.entity.Package;
 import com.otaku.entity.Product;
 import com.otaku.entity.ProductFlavor;
 import com.otaku.exception.DeletionNotAllowedException;
+import com.otaku.mapper.PackageMapper;
 import com.otaku.mapper.PackageProductMapper;
 import com.otaku.mapper.ProductFlavorMapper;
 import com.otaku.mapper.ProductMapper;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -34,6 +37,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductFlavorMapper productFlavorMapper;
     @Autowired
     private PackageProductMapper packageProductMapper;
+    @Autowired
+    private PackageMapper packageMapper;
     /**
      * 新增产品和对应的偏好
      * @param productDTO
@@ -171,6 +176,31 @@ public class ProductServiceImpl implements ProductService {
                 .status(StatusConstant.ENABLE)
                 .build();
         return productMapper.list(product);
+    }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Product product = Product.builder()
+                .id(id)
+                .status(status)
+                .build();
+        productMapper.update(product);
+
+        if (Objects.equals(status, StatusConstant.DISABLE)){
+            //如果是停售操作，还需要将包含当前产品的套餐也停售
+            List<Long> productIds = new ArrayList<>();
+            productIds.add(id);
+            List<Long> packageIds = packageProductMapper.getPackageIdsByProductIds(productIds);
+            if (packageIds.isEmpty()){
+                for (Long productId : productIds) {
+                    Package aPackage = Package.builder()
+                            .id(productId)
+                            .status(StatusConstant.DISABLE)
+                            .build();
+                    packageMapper.update(aPackage);
+                }
+            }
+        }
     }
 
     /**

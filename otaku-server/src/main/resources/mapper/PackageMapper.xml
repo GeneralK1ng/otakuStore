@@ -67,6 +67,7 @@
                 update_user = #{updateUser},
             </if>
         </set>
+        where id = #{id}
     </update>
 
     <select id="list" parameterType="Package" resultType="Package">

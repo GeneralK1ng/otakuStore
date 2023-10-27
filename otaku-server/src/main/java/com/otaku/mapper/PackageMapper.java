@@ -57,6 +57,7 @@ public interface PackageMapper {
      * 修改套餐基本信息
      * @param aPackage
      */
+    @AutoFill(OperationType.UPDATE)
     void update(Package aPackage);
 
     /**

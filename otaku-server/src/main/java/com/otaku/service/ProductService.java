@@ -56,4 +56,12 @@ public interface ProductService {
      * @return
      */
     List<ProductVO> listWithFlavor(Product product);
+
+    /**
+     * 产品起售停售
+     * @param status
+     * @param id
+     */
+    void startOrStop(Integer status, Long id);
+
 }

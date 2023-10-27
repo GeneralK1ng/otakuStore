@@ -44,7 +44,7 @@ public class PackageController {
      * @return
      */
     @GetMapping("/product/{id}")
-    @ApiOperation("根据套餐id查询包含的菜品列表")
+    @ApiOperation("根据套餐id查询包含的产品列表")
     public Result<List<ProductItemVO>> dishList(@PathVariable("id") Long id) {
         List<ProductItemVO> list = packageService.getProductItemById(id);
         return Result.success(list);
