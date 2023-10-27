@@ -37,14 +37,24 @@ logging:
 otaku:
   jwt:
     # 设置jwt签名加密时使用的秘钥
-    admin-secret-key: itcast
+    admin-secret-key: otaku
     # 设置jwt过期时间
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+    # 设置jwt签名加密时使用的秘钥
+    user-secret-key: otakuStore
+    # 设置jwt过期时间
+    user-ttl: 7200000
+    # 设置前端传递过来的令牌名称
+    user-token-name: authentication
 
   alioss:
     endpoint: ${otaku.alioss.endpoint}
     access-key-id: ${otaku.alioss.access-key-id}
     access-key-secret: ${otaku.alioss.access-key-secret}
     bucket-name: ${otaku.alioss.bucket-name}
+
+  wechat:
+    appid: ${otaku.wechat.appid}
+    secret: ${otaku.wechat.secret}
