@@ -8,6 +8,7 @@ import com.otaku.vo.ProductItemVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class PackageController {
      */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询套餐")
+    @Cacheable(cacheNames = "packageCache", key = "#categoryId") // key: packageCache::xxx
     public Result<List<Package>> list(Long categoryId) {
         Package aPackage = new Package();
         aPackage.setCategoryId(categoryId);
