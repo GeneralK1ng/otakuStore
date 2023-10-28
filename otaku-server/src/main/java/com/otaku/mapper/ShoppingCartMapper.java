@@ -2,6 +2,7 @@ package com.otaku.mapper;
 
 
 import com.otaku.entity.ShoppingCart;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Update;
@@ -33,4 +34,10 @@ public interface ShoppingCartMapper {
             "values (#{name}, #{image}, #{userId}, #{productId}, #{packageId}, #{productFlavor}, #{number}, #{amount}, #{creatTime})")
     void insert(ShoppingCart shoppingCart);
 
+    /**
+     * 根据用户ID删除购物车数据
+     * @param userId
+     */
+    @Delete("delete from shopping_cart where user_id = #{userId}")
+    void deleteByUserId(Long userId);
 }
