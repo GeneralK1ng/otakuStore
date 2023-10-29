@@ -101,10 +101,4 @@ public class Orders implements Serializable {
 
     //打包费
     private int packAmount;
-
-    //餐具数量
-    private int tablewareNumber;
-
-    //餐具数量状态  1按餐量提供  0选择具体数量
-    private Integer tablewareStatus;
 }
