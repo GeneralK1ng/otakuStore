@@ -1,5 +1,6 @@
 package com.otaku.service;
 
+import com.otaku.dto.OrdersPageQueryDTO;
 import com.otaku.dto.OrdersPaymentDTO;
 import com.otaku.dto.OrdersSubmitDTO;
 import com.otaku.result.PageResult;
@@ -56,4 +57,11 @@ public interface OrderService {
      * @param id
      */
     void repetition(Long id);
+
+    /**
+     *订单搜索
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 }

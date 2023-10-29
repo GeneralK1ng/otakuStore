@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -118,21 +119,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 订单支付
+     * 处理订单支付，生成预支付交易单并返回支付信息。
      *
-     * @param ordersPaymentDTO
-     * @return
+     * @param ordersPaymentDTO 包含支付所需信息的数据传输对象
+     * @return 包含支付信息的 OrderPaymentVO 对象
+     * @throws Exception 如果支付过程中出现异常
      */
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
-        // 当前登录用户id
+        // 获取当前登录用户的ID
         Long userId = BaseContext.getCurrentId();
         User user = weChatUserMapper.getById(userId);
 
-        //调用微信支付接口，生成预支付交易单
+        // 根据订单号查询订单金额
+        BigDecimal orderAmount = orderMapper.getByNumber(ordersPaymentDTO.getOrderNumber()).getAmount();
+
+        // 调用微信支付接口，生成预支付交易单
         JSONObject jsonObject = weChatPayUtil.pay(
                 ordersPaymentDTO.getOrderNumber(), //商户订单号
-                new BigDecimal(0.01), //支付金额，单位 元
-                "苍穹外卖订单", //商品描述
+                orderAmount, //支付金额，单位 元
+                "OtakuStore Order", //商品描述
                 user.getOpenid() //微信用户的openid
         );
 
@@ -140,6 +145,7 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderBusinessException("该订单已支付");
         }
 
+        // 将返回的 JSON 对象转换为 OrderPaymentVO 对象
         OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
         vo.setPackageStr(jsonObject.getString("package"));
 
@@ -147,48 +153,49 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 支付成功，修改订单状态
+     * 处理支付成功后，更新订单状态以反映付款完成。
      *
-     * @param outTradeNo
+     * @param outTradeNo 支付订单号
      */
     public void paySuccess(String outTradeNo) {
 
-        // 根据订单号查询订单
+        // 根据支付订单号查询订单
         Orders ordersDB = orderMapper.getByNumber(outTradeNo);
 
-        // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
+        // 根据订单ID更新订单的状态、支付状态、结账时间
         Orders orders = Orders.builder()
                 .id(ordersDB.getId())
-                .status(Orders.TO_BE_CONFIRMED)
-                .payStatus(Orders.PAID)
-                .checkoutTime(LocalDateTime.now())
+                .status(Orders.TO_BE_CONFIRMED) // 设置订单状态为待确认
+                .payStatus(Orders.PAID)          // 设置支付状态为已支付
+                .checkoutTime(LocalDateTime.now())// 设置结账时间为当前时间
                 .build();
 
         orderMapper.update(orders);
     }
 
     /**
-     * 用户端订单分页查询
+     * 用户端订单分页查询，根据页码、每页大小和订单状态筛选。
      *
-     * @param pageNum
-     * @param pageSize
-     * @param status
-     * @return
+     * @param pageNum  页码
+     * @param pageSize 每页大小
+     * @param status   订单状态
+     * @return 包含查询结果的分页结果对象
      */
     public PageResult pageQuery4User(int pageNum, int pageSize, Integer status) {
         // 设置分页
         PageHelper.startPage(pageNum, pageSize);
 
+        // 创建订单分页查询数据传输对象，并设置用户ID和订单状态
         OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
         ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
         ordersPageQueryDTO.setStatus(status);
 
-        // 分页条件查询
+        // 执行分页条件查询
         Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
 
         List<OrderVO> list = new ArrayList();
 
-        // 查询出订单明细，并封装入OrderVO进行响应
+        // 查询出订单明细，并封装入 OrderVO 进行响应
         if (page != null && page.getTotal() > 0) {
             for (Orders orders : page) {
                 Long orderId = orders.getId();// 订单id
@@ -206,13 +213,19 @@ public class OrderServiceImpl implements OrderService {
         return new PageResult(page.getTotal(), list);
     }
 
+    /**
+     * 获取指定订单ID的订单详细信息，包括订单本身和相关的商品或套餐明细。
+     *
+     * @param id 要查询的订单ID
+     * @return 包含订单详细信息的 OrderVO 对象
+     */
     @Override
     public OrderVO details(Long id) {
-        //根据id查询订单
+        // 根据订单ID查询订单信息
         Orders orders = orderMapper.getById(id);
-        //查询该订单对应的商品或者套餐明细
+        // 查询该订单对应的商品或套餐明细
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
-        //将该订单及其详情封装到OrderVO返回
+        // 将订单信息及其相关明细封装到 OrderVO 对象中并返回
         OrderVO orderVO = new OrderVO();
         BeanUtils.copyProperties(orders, orderVO);
         orderVO.setOrderDetailList(orderDetailList);
@@ -293,5 +306,73 @@ public class OrderServiceImpl implements OrderService {
 
         //将购物车对象批量添加到数据库
         shoppingCartMapper.insertBatch(shoppingCartList);
+    }
+
+    /**
+     * 执行订单搜索操作，根据指定条件查询订单列表。
+     *
+     * @param ordersPageQueryDTO 用于指定搜索条件的数据传输对象
+     * @return 包含查询结果的分页结果对象
+     */
+    @Override
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        // 使用PageHelper开启分页功能，指定页码和每页大小
+        PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
+
+        // 调用订单数据访问层的pageQuery方法执行查询
+        Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
+
+        //部分订单状态，需要额外返回订单商品信息，将Orders转换为OrderVO对象
+        List<OrderVO> orderVOList = getOrderVoList(page);
+
+        return new PageResult(page.getTotal(), orderVOList);
+    }
+
+    /**
+     * 将订单对象列表转换为包含订单产品信息的 OrderVO 对象列表。
+     *
+     * @param page 包含订单数据的分页对象
+     * @return 包含订单产品信息的 OrderVO 对象列表
+     */
+    private List<OrderVO> getOrderVoList(Page<Orders> page) {
+        //需要返回订单产品信息，自定义OrderVO响应结果
+        // 创建用于存储 OrderVO 对象的列表
+        List<OrderVO> orderVOList = new ArrayList<>();
+        // 从分页结果中获取订单对象列表
+        List<Orders> ordersList = page.getResult();
+        // 检查订单列表是否为空
+        if (!CollectionUtils.isEmpty(ordersList)){
+            for (Orders orders : ordersList) {
+                // 创建一个新的 OrderVO 对象并复制共享字段
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(orders, orderVO);
+                // 获取订单产品信息的字符串表示
+                String orderProducts = getOrderProductsStr(orders);
+
+                // 将订单产品信息封装到 OrderVO 对象中，并添加到 OrderVO 列表
+                orderVO.setOrderProducts(orderProducts);
+                orderVOList.add(orderVO);
+            }
+        }
+        return orderVOList;
+    }
+
+    /**
+     * 根据订单对象获取包含商品信息的字符串。
+     *
+     * @param orders 包含订单信息的订单对象
+     * @return 包含订单商品信息的字符串
+     */
+    private String getOrderProductsStr(Orders orders) {
+        // 查询订单产品详情信息（订单中的商品和数量）
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
+
+        // 将每一条订单商品信息拼接为字符串（格式为：“刻晴倒模*n”）
+        List<String> orderProductList = orderDetailList.stream().map(x -> {
+            return x.getName() + "*" + x.getNumber() + ";";
+        }).collect(Collectors.toList());
+
+        // 将订单中的所有商品信息拼接在一起
+        return String.join("", orderProductList);
     }
 }
