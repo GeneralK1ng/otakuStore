@@ -58,3 +58,10 @@ otaku:
   wechat:
     appid: ${otaku.wechat.appid}
     secret: ${otaku.wechat.secret}
+    mchid: ${otaku.wechat.mchid}
+    mchSerialNo: ${otaku.wechat.mchSerialNo}
+    privateKeyFilePath: ${otaku.wechat.privateKeyFilePath}
+    apiV3Key: ${otaku.wechat.apiV3Key}
+    weChatPayCertFilePath: ${otaku.wechat.weChatPayCertFilePath}
+    notifyUrl: ${otaku.wechat.notifyUrl}
+    refundNotifyUrl: ${otaku.wechat.refundNotifyUrl}
