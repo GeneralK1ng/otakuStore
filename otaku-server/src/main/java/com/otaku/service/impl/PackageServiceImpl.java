@@ -42,8 +42,9 @@ public class PackageServiceImpl implements PackageService {
     private ProductMapper productMapper;
 
     /**
-     * 新增套餐，同时保持产品和套餐之间的绑定关系
-     * @param packageDTO
+     * 新增套餐，同时维护套餐和产品之间的绑定关系。
+     *
+     * @param packageDTO 包含套餐和产品信息的数据传输对象。
      */
     @Override
     @Transactional
@@ -51,64 +52,68 @@ public class PackageServiceImpl implements PackageService {
         Package aPackage = new Package();
         BeanUtils.copyProperties(packageDTO,aPackage);
 
-        //向套餐表当中写入数据
+        // 向套餐表中插入数据
         packageMapper.insert(aPackage);
-        //获取生成套餐的ID
+        // 获取新生成的套餐的 ID
         Long aPackageId = aPackage.getId();
 
         List<PackageProduct> packageProducts = packageDTO.getPackageProducts();
-
+        // 设置每个套餐产品的套餐 ID，以建立绑定关系
         packageProducts.forEach(packageProduct -> {
             packageProduct.setPackageId(aPackageId);
         });
 
-        //保存套餐和产品之间的绑定关系
+        // 保存套餐和产品之间的绑定关系
         packageProductMapper.insertBatch(packageProducts);
 
     }
 
     /**
-     * 分页查询
-     * @param packagePageQueryDTO
-     * @return
+     * 分页查询套餐。
+     *
+     * @param packagePageQueryDTO 包含分页查询条件的数据传输对象。
+     * @return 返回包含分页结果的 PageResult 对象，包括总记录数和套餐信息列表。
      */
     @Override
     public PageResult pageQuery(PackagePageQueryDTO packagePageQueryDTO) {
         int pageNum = packagePageQueryDTO.getPage();
         int pageSize = packagePageQueryDTO.getPageSize();
-
+        // 使用分页插件设置分页参数
         PageHelper.startPage(pageNum,pageSize);
         Page<PackageVO> page = packageMapper.pageQuery(packagePageQueryDTO);
-
+        // 创建并返回包含分页结果的 PageResult 对象
         return new PageResult(page.getTotal(),page.getResult());
     }
 
     /**
-     * 批量删除套餐
-     * @param ids
+     * 批量删除套餐。
+     *
+     * @param ids 包含要删除的套餐的唯一标识 ID 的列表。
+     * @throws DeletionNotAllowedException 如果要删除的套餐处于正在销售状态，将抛出此异常。
      */
     @Transactional
     public void deleteBatch(List<Long> ids) {
         ids.forEach(id -> {
             Package aPackage = packageMapper.getById(id);
             if(StatusConstant.ENABLE == aPackage.getStatus()){
-                //正在售卖的套餐无法删除
+                // 正在销售的套餐无法删除
                 throw new DeletionNotAllowedException(MessageConstant.PACKAGE_ON_SALE);
             }
         });
 
         ids.forEach(packageId -> {
-            //删除套餐表中的数据
+            // 从套餐表中删除数据
             packageMapper.deleteById(packageId);
-            //删除套餐产品关系表中的数据
+            // 从套餐产品关系表中删除数据
             packageProductMapper.deleteByPackageId(packageId);
         });
     }
 
     /**
-     * 根据ID查询套餐和绑定套餐产品关系
-     * @param id
-     * @return
+     * 根据套餐 ID 查询套餐和相关套餐产品的绑定关系。
+     *
+     * @param id 套餐的唯一标识 ID。
+     * @return 返回包含套餐和绑定套餐产品的信息的 PackageVO 对象。
      */
     @Override
     public PackageVO getByIdWithProduct(Long id) {
@@ -122,22 +127,29 @@ public class PackageServiceImpl implements PackageService {
         return packageVO;
     }
 
+    /**
+     * 更新套餐信息，同时维护套餐和产品之间的绑定关系。
+     *
+     * @param packageDTO 包含套餐和产品信息的数据传输对象。
+     */
     @Override
     @Transactional
     public void update(PackageDTO packageDTO) {
         Package aPackage = new Package();
         BeanUtils.copyProperties(packageDTO,aPackage);
 
-        //执行update语句，修改套餐表
+        // 执行更新语句，修改套餐表
         packageMapper.update(aPackage);
 
-        //套餐ID
+        // 获取套餐的唯一标识 ID
         Long packageId = packageDTO.getId();
 
-        //删除套餐和产品之间的关系，操作package_product表，执行delete
+        // 删除套餐和产品之间的关系，操作package_product表，执行delete
         packageProductMapper.deleteByPackageId(packageId);
 
         List<PackageProduct> packageProducts = packageDTO.getPackageProducts();
+
+        // 设置每个套餐产品的套餐 ID，以重新建立绑定关系
         packageProducts.forEach(packageProduct -> {
             packageProduct.setPackageId(packageId);
         });
@@ -148,13 +160,15 @@ public class PackageServiceImpl implements PackageService {
     }
 
     /**
-     * 套餐的启售和停售
-     * @param status
-     * @param id
+     * 启售或停售套餐。
+     *
+     * @param status 新的套餐状态，可以是 {@link StatusConstant#ENABLE}（启售）或 {@link StatusConstant#DISABLE}（停售）。
+     * @param id 套餐的唯一标识 ID。
+     * @throws PackageEnableFailedException 如果尝试启售套餐，但套餐内包含停售产品，将抛出此异常。
      */
     @Override
     public void startOrStop(Integer status, Long id) {
-        //套餐正在售出时，判断套餐内是否有停止售卖的产品，如果有则返回“套餐内包含停售产品，无法启售”
+        // 如果要启售套餐，检查套餐内是否包含停售产品，如果有则抛出异常
         if (Objects.equals(status, StatusConstant.ENABLE)){
 
             List<Product> productList = productMapper.getByPackageId(id);
@@ -171,25 +185,26 @@ public class PackageServiceImpl implements PackageService {
                 .id(id)
                 .status(status)
                 .build();
-
+        // 更新套餐的状态
         packageMapper.update(aPackage);
     }
 
     /**
-     * 条件查询
-     * @param aPackage
-     * @return
+     * 根据动态条件查询套餐列表。
+     *
+     * @param aPackage 包含动态查询条件的套餐对象。
+     * @return 返回符合给定条件的套餐列表。
      */
     @Override
     public List<Package> list(Package aPackage) {
-        List<Package> list = packageMapper.list(aPackage);
-        return list;
+        return packageMapper.list(aPackage);
     }
 
     /**
-     * 根据ID查询产品选项
-     * @param id
-     * @return
+     * 根据套餐 ID 查询包含的产品选项。
+     *
+     * @param id 套餐的唯一标识 ID。
+     * @return 返回包含产品选项信息的列表，每个选项包括产品名称、份数、图片和描述。
      */
     @Override
     public List<ProductItemVO> getProductItemById(Long id) {
