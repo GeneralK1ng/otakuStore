@@ -4,6 +4,7 @@ package com.otaku.controller.admin;
 import com.otaku.result.Result;
 import com.otaku.service.ReportService;
 import com.otaku.vo.OrderReportVO;
+import com.otaku.vo.SalesTop10ReportVO;
 import com.otaku.vo.TurnoverReportVO;
 import com.otaku.vo.UserReportVO;
 import io.swagger.annotations.Api;
@@ -74,5 +75,20 @@ public class ReportController {
         // 记录日志，用于跟踪统计请求
         log.info("订单数据统计：{}，{}", begin, end);
         return Result.success(reportService.getOrderStatistics(begin, end));
+    }
+
+    /**
+     * 销量排名top10
+     * @param begin
+     * @param end
+     * @return
+     */
+    @GetMapping("/top10")
+    @ApiOperation(value = "销量榜前10")
+    public Result<SalesTop10ReportVO> top10(
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
+        log.info("销量排名top10统计：{}，{}", begin, end);
+        return Result.success(reportService.getSalesTop10Statistics(begin, end));
     }
 }

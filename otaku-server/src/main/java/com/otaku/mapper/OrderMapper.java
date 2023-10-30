@@ -2,6 +2,7 @@ package com.otaku.mapper;
 
 
 import com.github.pagehelper.Page;
+import com.otaku.dto.GoodsSalesDTO;
 import com.otaku.dto.OrdersPageQueryDTO;
 import com.otaku.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
@@ -86,4 +87,14 @@ public interface OrderMapper {
      * @return 统计结果，表示订单的数据，可能为null
      */
     Integer countByMap(Map<String, Object> map);
+
+    /**
+     * 统计指定时间范围内的销量排名前10的商品数据。
+     *
+     * @param begin 开始时间
+     * @param end 结束时间
+     * @return 返回包含销量排名前10的商品数据的泛型 List，每个元素为 GoodsSalesDTO 对象
+     */
+
+    List<GoodsSalesDTO> getSalesTop10(LocalDateTime begin, LocalDateTime end);
 }

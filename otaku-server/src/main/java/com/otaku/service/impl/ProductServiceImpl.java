@@ -178,26 +178,42 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.list(product);
     }
 
+    /**
+     * 启用或停用产品。
+     *
+     * @param status 产品状态，1表示启用，0表示停用
+     * @param id 产品ID
+     */
     @Override
+    @Transactional
     public void startOrStop(Integer status, Long id) {
+        // 创建产品对象，用于更新产品状态
         Product product = Product.builder()
                 .id(id)
                 .status(status)
                 .build();
+        // 更新产品状态
         productMapper.update(product);
+        // 记录产品状态更新日志
+        log.info("产品状态更新成功：ID={}, 新状态={}", id, status);
 
         if (Objects.equals(status, StatusConstant.DISABLE)){
-            //如果是停售操作，还需要将包含当前产品的套餐也停售
+            // 如果是停售操作，还需要将包含当前产品的套餐也停售
             List<Long> productIds = new ArrayList<>();
             productIds.add(id);
+            // 获取包含当前产品的套餐列表
             List<Long> packageIds = packageProductMapper.getPackageIdsByProductIds(productIds);
-            if (packageIds.isEmpty()){
-                for (Long productId : productIds) {
+            if (!packageIds.isEmpty()){
+                for (Long packageId : packageIds) {
+                    // 创建套餐对象，用于更新套餐状态
                     Package aPackage = Package.builder()
-                            .id(productId)
+                            .id(packageId)
                             .status(StatusConstant.DISABLE)
                             .build();
+                    // 更新套餐状态
                     packageMapper.update(aPackage);
+                    // 记录套餐状态更新日志
+                    log.info("套餐状态更新成功：ID={}, 新状态={}", packageId, StatusConstant.DISABLE);
                 }
             }
         }

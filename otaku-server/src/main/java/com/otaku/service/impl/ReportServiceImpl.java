@@ -1,10 +1,12 @@
 package com.otaku.service.impl;
 
+import com.otaku.dto.GoodsSalesDTO;
 import com.otaku.entity.Orders;
 import com.otaku.mapper.OrderMapper;
 import com.otaku.mapper.UserMapper;
 import com.otaku.service.ReportService;
 import com.otaku.vo.OrderReportVO;
+import com.otaku.vo.SalesTop10ReportVO;
 import com.otaku.vo.TurnoverReportVO;
 import com.otaku.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -206,5 +209,35 @@ public class ReportServiceImpl implements ReportService {
         map.put("status", status);
 
         return orderMapper.countByMap(map);
+    }
+
+    /**
+     * 统计指定时间范围内的销量排行 top 10 报告。
+     *
+     * @param begin 统计开始日期
+     * @param end 统计结束日期
+     * @return 一个包含销量排行 top 10 的 SalesTop10ReportVO 对象
+     */
+    @Override
+    public SalesTop10ReportVO getSalesTop10Statistics(LocalDate begin, LocalDate end) {
+        // 创建开始和结束的日期时间
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+
+        // 查询销量排行 top 10 数据
+        List<GoodsSalesDTO> salesTop10 = orderMapper.getSalesTop10(beginTime, endTime);
+
+        // 查询销量排行 top 10 数据
+        List<String> names = salesTop10.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
+        String nameList = StringUtils.join(names, ",");
+
+        List<Integer> numbers = salesTop10.stream().map(GoodsSalesDTO::getNumber).collect(Collectors.toList());
+        String numberList = StringUtils.join(numbers, ",");
+
+        // 构建销量排行 top 10 报告对象
+        return SalesTop10ReportVO.builder()
+                .nameList(nameList)
+                .numberList(numberList)
+                .build();
     }
 }
