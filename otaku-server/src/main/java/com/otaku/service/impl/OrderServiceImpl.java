@@ -1,6 +1,7 @@
 package com.otaku.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.github.pagehelper.Page;
@@ -20,6 +21,7 @@ import com.otaku.vo.OrderPaymentVO;
 import com.otaku.vo.OrderStatisticsVO;
 import com.otaku.vo.OrderSubmitVO;
 import com.otaku.vo.OrderVO;
+import com.otaku.webSocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +31,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -50,7 +50,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private WeChatPayUtil weChatPayUtil;
     @Autowired
-    private WeChatUserMapper weChatUserMapper;
+    private UserMapper userMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
 
     /**
@@ -131,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         // 获取当前登录用户的ID
         Long userId = BaseContext.getCurrentId();
-        User user = weChatUserMapper.getById(userId);
+        User user = userMapper.getById(userId);
 
         // 根据订单号查询订单金额
         BigDecimal orderAmount = orderMapper.getByNumber(ordersPaymentDTO.getOrderNumber()).getAmount();
@@ -174,6 +176,17 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+        //通过webSocket向客户端浏览器推送消息 type orderId content
+        Map msg = new HashMap();
+        msg.put("type", 1); //1表示来单提醒 2表示用户催单
+        msg.put("orderId", ordersDB.getId());
+        msg.put("content", "订单号：" + outTradeNo);
+
+        String jsonString = JSON.toJSONString(msg);
+
+        webSocketServer.sendToAllClient(jsonString);
+
     }
 
     /**
@@ -520,5 +533,29 @@ public class OrderServiceImpl implements OrderService {
         orders.setDeliveryTime(LocalDateTime.now());
 
         orderMapper.update(orders);
+    }
+
+
+    /**
+     * 用户催单
+     * @param id
+     */
+    @Override
+    public void reminder(Long id) {
+        //根据ID查询订单
+        Orders ordersDB = orderMapper.getById(id);
+
+        //校验订单是否存在
+        if (ordersDB == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Map msg = new HashMap();
+        msg.put("type", 2); //1表示来单提醒，2表示用户催单
+        msg.put("orderId", id);
+        msg.put("content", "订单号：" + ordersDB.getNumber());
+
+        //通过websocket
+        webSocketServer.sendToAllClient(JSON.toJSONString(msg));
     }
 }

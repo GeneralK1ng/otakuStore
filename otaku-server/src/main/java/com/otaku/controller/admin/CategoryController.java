@@ -26,9 +26,10 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * 新增分类
-     * @param categoryDTO
-     * @return
+     * 新增分类。
+     *
+     * @param categoryDTO 包含分类信息的数据传输对象
+     * @return 包含操作结果的成功响应
      */
     @PostMapping
     @ApiOperation("新增分类")
@@ -39,9 +40,10 @@ public class CategoryController {
     }
 
     /**
-     * 分类分页查询
-     * @param categoryPageQueryDTO
-     * @return
+     * 分类分页查询。
+     *
+     * @param categoryPageQueryDTO 包含分类分页查询条件的数据传输对象
+     * @return 包含分页查询结果的成功响应
      */
     @GetMapping("/page")
     @ApiOperation("分类分页查询")
@@ -52,9 +54,10 @@ public class CategoryController {
     }
 
     /**
-     * 删除分类
-     * @param id
-     * @return
+     * 删除分类。
+     *
+     * @param id 要删除的分类的唯一标识
+     * @return 包含操作结果的成功响应
      */
     @DeleteMapping
     @ApiOperation("删除分类")
@@ -65,9 +68,10 @@ public class CategoryController {
     }
 
     /**
-     * 修改分类
-     * @param categoryDTO
-     * @return
+     * 修改分类。
+     *
+     * @param categoryDTO 包含更新后的分类信息的数据传输对象
+     * @return 包含操作结果的成功响应
      */
     @PutMapping
     @ApiOperation("修改分类")
@@ -77,10 +81,11 @@ public class CategoryController {
     }
 
     /**
-     * 启用、禁用分类
-     * @param status
-     * @param id
-     * @return
+     * 启用或禁用分类。
+     *
+     * @param status 启用（1）或禁用（0）状态
+     * @param id 要操作的分类的唯一标识
+     * @return 包含操作结果的成功响应
      */
     @PostMapping("/status/{status}")
     @ApiOperation("启用禁用分类")
@@ -90,9 +95,10 @@ public class CategoryController {
     }
 
     /**
-     * 根据类型查询分类
-     * @param type
-     * @return
+     * 根据类型查询分类。
+     *
+     * @param type 分类类型
+     * @return 包含分类列表的成功响应
      */
     @GetMapping("/list")
     @ApiOperation("根据类型查询分类")

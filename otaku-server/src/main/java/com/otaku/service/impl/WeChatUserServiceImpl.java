@@ -7,7 +7,7 @@ import com.otaku.constant.MessageConstant;
 import com.otaku.dto.UserLoginDTO;
 import com.otaku.entity.User;
 import com.otaku.exception.LoginFailedException;
-import com.otaku.mapper.WeChatUserMapper;
+import com.otaku.mapper.UserMapper;
 import com.otaku.properties.WeChatProperties;
 import com.otaku.service.WeChatUserService;
 import com.otaku.utils.HttpClientUtil;
@@ -30,7 +30,7 @@ public class WeChatUserServiceImpl implements WeChatUserService {
     private WeChatProperties weChatProperties;
 
     @Autowired
-    private WeChatUserMapper weChatUserMapper;
+    private UserMapper userMapper;
     /**
      * 用户微信登录
      * @param userLoginDTO
@@ -46,7 +46,7 @@ public class WeChatUserServiceImpl implements WeChatUserService {
             throw new LoginFailedException(MessageConstant.LOGIN_FAILED);
         }
         //判断当前微信用户是不是一个新用户
-        User user = weChatUserMapper.getByOpenId(openid);
+        User user = userMapper.getByOpenId(openid);
 
         //如果是新用户，自动完成注册
         if(user == null){
@@ -54,7 +54,7 @@ public class WeChatUserServiceImpl implements WeChatUserService {
                     .openid(openid)
                     .createTime(LocalDateTime.now())
                     .build();
-             weChatUserMapper.insert(user);
+             userMapper.insert(user);
         }
 
         //返回这个对象
