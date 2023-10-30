@@ -111,7 +111,7 @@ public class ProductController {
      * @return
      */
     @PostMapping("/status/{status}")
-    @ApiOperation("菜品起售停售")
+    @ApiOperation("产品起售停售")
     public Result<String> startOrStop(@PathVariable Integer status, Long id){
         productService.startOrStop(status,id);
 

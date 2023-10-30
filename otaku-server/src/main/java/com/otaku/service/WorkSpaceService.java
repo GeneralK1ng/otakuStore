@@ -26,14 +26,14 @@ public interface WorkSpaceService {
     /**
      * 查询产品总览
      *
-     * @return 返回包含产品总览数据的结果对象。
+     * @return 返回包含产品总览数据的结果对象
      */
     ProductOverViewVO getProductOverView();
 
     /**
-     * 查询套餐总览。
+     * 查询套餐总览
      *
-     * @return 返回包含套餐总览数据的结果对象。
+     * @return 返回包含套餐总览数据的结果对象
      */
     PackageOverViewVO getPackageOverView();
 
