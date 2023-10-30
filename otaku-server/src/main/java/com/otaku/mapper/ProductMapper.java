@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ProductMapper {
@@ -80,4 +81,12 @@ public interface ProductMapper {
     @Select("select p.* from product p left join package_product pp on p.id = pp.product_id where " +
             "pp.package_id = #{packageId}")
     List<Product> getByPackageId(Long packageId);
+
+    /**
+     * 根据动态条件查询产品数量。
+     *
+     * @param map 包含动态查询条件的参数映射。
+     * @return 返回满足给定条件的产品数量。
+     */
+    Integer countByMap(Map<String, Object> map);
 }
