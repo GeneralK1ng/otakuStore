@@ -5,15 +5,20 @@ import com.otaku.entity.Orders;
 import com.otaku.mapper.OrderMapper;
 import com.otaku.mapper.UserMapper;
 import com.otaku.service.ReportService;
-import com.otaku.vo.OrderReportVO;
-import com.otaku.vo.SalesTop10ReportVO;
-import com.otaku.vo.TurnoverReportVO;
-import com.otaku.vo.UserReportVO;
+import com.otaku.service.WorkSpaceService;
+import com.otaku.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,7 +35,8 @@ public class ReportServiceImpl implements ReportService {
     private OrderMapper orderMapper;
     @Autowired
     private UserMapper userMapper;
-
+    @Autowired
+    private WorkSpaceService workSpaceService;
     /**
      * 计算给定日期范围内的每一天的营业额统计信息。
      *
@@ -239,5 +245,91 @@ public class ReportServiceImpl implements ReportService {
                 .nameList(nameList)
                 .numberList(numberList)
                 .build();
+    }
+
+    /**
+     * 导出运营数据报表。
+     *
+     * @param response HttpServletResponse对象，用于将导出文件写入响应流。
+     */
+    @Override
+    public void exportBusinessData(HttpServletResponse response) {
+        // TODO: 优化建议 - 将日期范围的计算逻辑封装成一个方法，提高代码的可维护性。
+        // 计算查询的日期范围（默认为最近30天）
+        LocalDate dateBegin = LocalDate.now().minusDays(30);
+        LocalDate dateEnd = LocalDate.now().minusDays(1);
+        // 获取运营数据报表信息
+        BusinessDataVO businessDataVO
+                = workSpaceService.getBusinessData(LocalDateTime.of(dateBegin, LocalTime.MIN),
+                LocalDateTime.of(dateEnd, LocalTime.MAX));
+
+        // 从类路径中获取报表模板文件
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("template/运营数据报表模板.xlsx");
+
+        try {
+            // 创建Excel工作簿并填充数据
+            XSSFWorkbook excel = createAndPopulateExcel(inputStream, dateBegin, dateEnd, businessDataVO);
+
+            // 将生成的Excel写入响应流
+            ServletOutputStream out = response.getOutputStream();
+            excel.write(out);
+
+            // 关闭输出流和Excel工作簿
+            out.close();
+            excel.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    /**
+     * 创建Excel工作簿并填充数据。
+     *
+     * @param templateInputStream 包含报表模板的输入流。
+     * @param dateBegin 开始日期。
+     * @param dateEnd 结束日期。
+     * @param businessDataVO 运营数据报表信息。
+     * @return 创建并填充数据后的Excel工作簿。
+     */
+    private XSSFWorkbook createAndPopulateExcel(InputStream templateInputStream, LocalDate dateBegin,
+                                                LocalDate dateEnd, BusinessDataVO businessDataVO) throws IOException {
+        // 创建一个Excel工作簿
+        XSSFWorkbook excel = new XSSFWorkbook(templateInputStream);
+
+        // 获取Excel工作表
+        XSSFSheet sheet = excel.getSheet("Sheet1");
+
+        // 设置报表日期范围
+        sheet.getRow(1).getCell(1).setCellValue("时间：" + dateBegin + " 至 " + dateEnd);
+
+        // 填充报表数据
+        XSSFRow row = sheet.getRow(3);
+        row.getCell(2).setCellValue(businessDataVO.getTurnover());
+        row.getCell(4).setCellValue(businessDataVO.getOrderCompletionRate());
+        row.getCell(6).setCellValue(businessDataVO.getNewUsers());
+
+        row = sheet.getRow(4);
+        row.getCell(2).setCellValue(businessDataVO.getValidOrderCount());
+        row.getCell(4).setCellValue(businessDataVO.getUnitPrice());
+
+        // 遍历每天的数据，填充到报表中
+        for (int i = 0; i < 30; i++) {
+            LocalDate date = dateBegin.plusDays(i);
+            BusinessDataVO businessData = workSpaceService.getBusinessData(
+                    LocalDateTime.of(date, LocalTime.MIN),
+                    LocalDateTime.of(date, LocalTime.MAX));
+
+            row = sheet.getRow(7 + i);
+            row.getCell(1).setCellValue(date.toString());
+            row.getCell(2).setCellValue(businessData.getTurnover());
+            row.getCell(3).setCellValue(businessData.getValidOrderCount());
+            row.getCell(4).setCellValue(businessData.getOrderCompletionRate());
+            row.getCell(5).setCellValue(businessData.getUnitPrice());
+            row.getCell(6).setCellValue(businessData.getNewUsers());
+        }
+
+        return excel;
     }
 }

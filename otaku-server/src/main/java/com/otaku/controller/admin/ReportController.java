@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 @RestController
@@ -78,10 +79,11 @@ public class ReportController {
     }
 
     /**
-     * 销量排名top10
-     * @param begin
-     * @param end
-     * @return
+     * 获取指定日期范围内的销量排名前10的报告数据。
+     *
+     * @param begin 查询的开始日期，采用 "yyyy-MM-dd" 格式。
+     * @param end 查询的结束日期，采用 "yyyy-MM-dd" 格式。
+     * @return 返回包含销量排名前10的报告数据的 Result 对象。
      */
     @GetMapping("/top10")
     @ApiOperation(value = "销量榜前10")
@@ -90,5 +92,16 @@ public class ReportController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
         log.info("销量排名top10统计：{}，{}", begin, end);
         return Result.success(reportService.getSalesTop10Statistics(begin, end));
+    }
+
+    /**
+     * 导出运营数据报表。
+     *
+     * @param response HttpServletResponse对象，用于将导出文件写入响应流。
+     */
+    @GetMapping("/export")
+    @ApiOperation(value = "导出数据报表")
+    public void export(HttpServletResponse response){
+        reportService.exportBusinessData(response);
     }
 }

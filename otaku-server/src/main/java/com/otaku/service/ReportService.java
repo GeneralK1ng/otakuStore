@@ -5,6 +5,7 @@ import com.otaku.vo.SalesTop10ReportVO;
 import com.otaku.vo.TurnoverReportVO;
 import com.otaku.vo.UserReportVO;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 public interface ReportService {
@@ -44,4 +45,11 @@ public interface ReportService {
      * @return 一个包含订单数据统计信息的 SalesTop10ReportVO 对象
      */
     SalesTop10ReportVO getSalesTop10Statistics(LocalDate begin, LocalDate end);
+
+    /**
+     * 导出运营数据报表。
+     *
+     * @param response HttpServletResponse对象，用于将导出文件写入响应流。
+     */
+    void exportBusinessData(HttpServletResponse response);
 }
