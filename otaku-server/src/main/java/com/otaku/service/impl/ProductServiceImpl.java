@@ -234,7 +234,7 @@ public class ProductServiceImpl implements ProductService {
             ProductVO productVO = new ProductVO();
             BeanUtils.copyProperties(p,productVO);
 
-            //根据菜品id查询对应的口味
+            //根据产品id查询对应的口味
             List<ProductFlavor> flavors = productFlavorMapper.getByProductId(p.getId());
 
             productVO.setFlavors(flavors);

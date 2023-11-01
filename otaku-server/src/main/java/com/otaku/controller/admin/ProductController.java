@@ -121,7 +121,7 @@ public class ProductController {
     }
 
     /**
-     * 根据分类id查询菜品
+     * 根据分类id查询产品
      * @param categoryId
      * @return
      */

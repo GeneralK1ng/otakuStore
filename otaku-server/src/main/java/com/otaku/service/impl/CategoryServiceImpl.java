@@ -72,17 +72,17 @@ public class CategoryServiceImpl implements CategoryService {
      * @param id
      */
     public void deleteById(Long id) {
-        //查询当前分类是否关联了菜品，如果关联了就抛出业务异常
+        //查询当前分类是否关联了产品，如果关联了就抛出业务异常
         Integer count = productMapper.countByCategoryId(id);
         if(count > 0){
-            //当前分类下有菜品，不能删除
+            //当前分类下有产品，不能删除
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_PRODUCT);
         }
 
         //查询当前分类是否关联了套餐，如果关联了就抛出业务异常
         count = packageMapper.countByCategoryId(id);
         if(count > 0){
-            //当前分类下有菜品，不能删除
+            //当前分类下有产品，不能删除
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_PACKAGE);
         }
 

@@ -74,7 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void save(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
 
-        //对象属性的拷贝（“id”、“username”、“name”、“phone”、“sex”、“idNumber(身份证)”）
+        //对象属性的拷贝（“id”、“username”、“name”、“phone”、“gender”、“idNumber(身份证)”）
         BeanUtils.copyProperties(employeeDTO,employee);
 
         //设置账号的状态，默认是正常状态“1”,反之“0”表示锁定
