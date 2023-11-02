@@ -34,23 +34,30 @@ public class ProductController {
 
     /**
      * 新增产品
-     * @param productDTO
-     * @return
+     * 该方法用于接收一个ProductDTO对象作为参数，其中包含了要新增的产品的相关信息。
+     * 方法使用HTTP的POST方法进行请求，并将返回一个Result对象作为结果。
+     * @param productDTO - 产品信息
+     * @return 结果对象
      */
     @PostMapping
     @ApiOperation(value = "新增产品")
     public Result save(@RequestBody ProductDTO productDTO){
-         log.info("新增产品：{}",productDTO);
-         productService.saveWithFlavor(productDTO);
+        log.info("新增产品：{}",productDTO);
+        productService.saveWithFlavor(productDTO);
 
-
-         //清理redis缓存
+        // 清理redis缓存
         String key = "product_" + productDTO.getCategoryId();
         cleanCache(key);
         return Result.success();
     }
 
 
+
+    /**
+     * 产品分页查询
+     * @param productPageQueryDTO 查询条件
+     * @return 结果对象，包含分页查询结果
+     */
     @GetMapping("/page")
     @ApiOperation(value = "产品分页查询")
     public Result<PageResult> page(ProductPageQueryDTO productPageQueryDTO) {
@@ -58,6 +65,7 @@ public class ProductController {
         PageResult pageResult = productService.pageQuery(productPageQueryDTO);
         return Result.success(pageResult);
     }
+
 
     /**
      * 产品批量删除

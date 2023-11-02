@@ -26,10 +26,10 @@ public class CommonController {
 
     @Autowired
     private AliOssUtil aliOssUtil;
-    /**
+        /**
      * 文件上传
-     * @param file
-     * @return
+     * @param file 选择上传的文件
+     * @return 上传成功返回文件路径，失败返回错误信息
      */
     @PostMapping("upload")
     @ApiOperation(value = "文件上传")
@@ -37,13 +37,13 @@ public class CommonController {
         log.info("文件上传：{}",file);
 
         try {
-            //原始文件名
+            // 获取原始文件名
             String originalFilename = file.getOriginalFilename();
-            //截取原始文件名的后缀png?jpg?
+            // 截取原始文件名的后缀（如：png、jpg）
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            //构造新文件名称
+            // 构造新文件名称（使用UUID作为文件名前缀）
             String objectName = UUID.randomUUID().toString() + extension;
-            //文件的请求路径
+            // 构造文件的请求路径
             String filePath = aliOssUtil.upload(file.getBytes(), objectName);
             return Result.success(filePath);
         } catch (IOException e) {
@@ -52,4 +52,5 @@ public class CommonController {
 
         return Result.error(MessageConstant.UPLOAD_FAILED);
     }
+
 }
