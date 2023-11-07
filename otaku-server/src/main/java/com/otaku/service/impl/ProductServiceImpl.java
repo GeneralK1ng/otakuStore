@@ -84,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 产品批量删除
-     * @param ids
+     * @param ids 传入要删除的ID表
      */
     @Override
     public void deleteBatch(List<Long> ids) {
@@ -122,8 +122,8 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 根据ID查询产品信息和对应的偏好数据
-     * @param id
-     * @return
+     * @param id 要查询产品信息的ID
+     * @return 返回查询到的数据
      */
     @Override
     public ProductVO getByIdWithFlavor(Long id) {
@@ -141,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 根据ID修改产品基本信息和偏好数据
-     * @param productDTO
+     * @param productDTO 产品DTO
      */
     @Override
     public void updateWithFlavor(ProductDTO productDTO) {
@@ -166,8 +166,8 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 根据分类ID查询产品
-     * @param categoryId
-     * @return
+     * @param categoryId 分类的ID
+     * @return 该分类ID下的产品
      */
     @Override
     public List<Product> list(Long categoryId) {
@@ -222,8 +222,8 @@ public class ProductServiceImpl implements ProductService {
     /**
      * 条件查询产品和偏好
      *
-     * @param product
-     * @return
+     * @param product 产品对象
+     * @return 返回产品数据展示对象
      */
     public List<ProductVO> listWithFlavor(Product product) {
         List<Product> productList = productMapper.list(product);

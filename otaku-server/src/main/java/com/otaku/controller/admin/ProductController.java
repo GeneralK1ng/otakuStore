@@ -69,8 +69,8 @@ public class ProductController {
 
     /**
      * 产品批量删除
-     * @param ids
-     * @return
+     * @param ids 要删除的产品ID列表
+     * @return 删除结果
      */
     @DeleteMapping
     @ApiOperation(value = "产品批量删除操作")
@@ -86,8 +86,8 @@ public class ProductController {
 
     /**
      * 根据ID查询产品信息与偏好数据
-     * @param id
-     * @return
+     * @param id 查询的产品ID
+     * @return 产品信息与偏好数据
      */
     @GetMapping("/{id}")
     @ApiOperation(value = "根据ID查询产品")
@@ -98,8 +98,9 @@ public class ProductController {
     }
 
     /**
-     *修改产品信息
-     * @return
+     * 修改产品信息
+     * @param productDTO 产品信息
+     * @return 修改结果
      */
     @PutMapping
     @ApiOperation(value = "修改产品信息")
@@ -114,9 +115,9 @@ public class ProductController {
 
     /**
      * 产品起售停售
-     * @param status
-     * @param id
-     * @return
+     * @param status 状态，1表示起售，0表示停售
+     * @param id 产品ID
+     * @return 结果对象，包含操作是否成功的信息
      */
     @PostMapping("/status/{status}")
     @ApiOperation("产品起售停售")
@@ -130,8 +131,8 @@ public class ProductController {
 
     /**
      * 根据分类id查询产品
-     * @param categoryId
-     * @return
+     * @param categoryId 分类id
+     * @return 产品列表
      */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询产品")
@@ -140,9 +141,17 @@ public class ProductController {
         return Result.success(list);
     }
 
+    /**
+     * 清理缓存
+     * @param pattern 匹配模式
+     */
     private void cleanCache(String pattern){
+        // 清理缓存，根据给定的模式删除redis中的数据
         Set keys = redisTemplate.keys(pattern);
+        // 根据给定的模式获取匹配的键名集合
         redisTemplate.delete(keys);
+        // 删除redis中对应的所有键值对
     }
+
 
 }
