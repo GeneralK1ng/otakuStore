@@ -24,6 +24,7 @@ public interface UserMapper {
      * 插入用户
      * @param user
      */
+    @AutoFill(value = OperationType.INSERT)
     void insert(User user);
 
     /**
@@ -49,4 +50,10 @@ public interface UserMapper {
      */
     @Select("select * from user where username = #{username}")
     User getByUsername(String username);
+
+    /**
+     * 更新用户
+     * @param user
+     */
+    void update(User user);
 }

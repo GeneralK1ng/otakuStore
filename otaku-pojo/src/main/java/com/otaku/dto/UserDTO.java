@@ -18,7 +18,6 @@ public class UserDTO {
     private String gender;
     //身份证
     private String idNumber;
-
     //头像
     private String avatar;
 }

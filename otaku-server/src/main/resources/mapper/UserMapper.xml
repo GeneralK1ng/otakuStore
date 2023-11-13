@@ -9,6 +9,7 @@
         VALUES (#{openid}, #{name}, #{phone}, #{gender}, #{idNumber}, #{avatar}, #{createTime}, #{updateTime}, #{username}, #{password})
     </insert>
 
+
     <select id="countByMap" resultType="java.lang.Integer">
         select count(id) from user
         <where>
@@ -20,4 +21,35 @@
             </if>
         </where>
     </select>
+
+    <update id="update">
+        update user
+        <set>
+            <if test="name!= null">
+                name = #{name},
+            </if>
+            <if test="phone!= null">
+                phone = #{phone},
+            </if>
+            <if test="gender!= null">
+                gender = #{gender},
+            </if>
+            <if test="idNumber!= null">
+                id_number = #{idNumber},
+            </if>
+            <if test="avatar!= null">
+                avatar = #{avatar},
+            </if>
+            <if test="username!= null">
+                username = #{username},
+            </if>
+            <if test="password!= null">
+                password = #{password},
+            </if>
+            <if test="updateTime != null">
+                update_Time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 </mapper>

@@ -46,17 +46,14 @@ public class UserController {
 
         User user = userService.login(userLoginDTO);
 
-        //登录成功后，生成jwt令牌
+        //为用户生成专用的令牌
         Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.EMP_ID, user.getId());
-        String token = JwtUtil.createJWT(
-                jwtProperties.getAdminSecretKey(),
-                jwtProperties.getAdminTtl(),
-                claims);
+        claims.put(JwtClaimsConstant.USER_ID,user.getId());
+        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
 
         UserLoginVO userLoginVO = UserLoginVO.builder()
                 .id(user.getId())
-                .username(user.getUsername())
+                .openid(user.getOpenid())
                 .token(token)
                 .build();
 
@@ -74,6 +71,14 @@ public class UserController {
     public Result Register(@RequestBody UserDTO userDTO) {
         log.info("用户 {} 正在注册", userDTO);
         userService.register(userDTO);
+        return Result.success();
+    }
+
+    @PostMapping("/update")
+    @ApiOperation(value = "用户更新账号信息")
+    public Result Update(@RequestBody UserDTO userDTO) {
+        log.info("用户 {} 更新账号信息", userDTO);
+        userService.update(userDTO);
         return Result.success();
     }
 }

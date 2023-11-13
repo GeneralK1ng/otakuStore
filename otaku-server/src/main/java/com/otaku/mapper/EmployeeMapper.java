@@ -27,7 +27,6 @@ public interface EmployeeMapper {
     @Insert("INSERT INTO employee(name, username, password, phone, gender, id_number, create_time, update_time, create_user, update_user, status) " +
             "values " +
             "(#{name},#{username},#{password},#{phone},#{gender},#{idNumber},#{createTime},#{updateTime},#{createUser},#{updateUser},#{status})")
-    @AutoFill(value = OperationType.INSERT)
     void insert(Employee employee);
 
     /**
@@ -42,7 +41,6 @@ public interface EmployeeMapper {
      * 根据主键动态修改属性
      * @param employee
      */
-    @AutoFill(value = OperationType.UPDATE)
     void update(Employee employee);
 
     /**

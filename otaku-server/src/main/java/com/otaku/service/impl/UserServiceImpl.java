@@ -56,11 +56,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(UserDTO userDTO) {
         User user = new User();
-
         //对象的数据拷贝
         BeanUtils.copyProperties(userDTO, user);
         user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
         user.setCreateTime(LocalDateTime.now());
         userMapper.insert(user);
+    }
+
+    @Override
+    public void update(UserDTO userDTO) {
+        User user = new User();
+        BeanUtils.copyProperties(userDTO, user);
+        user.setUpdateTime(LocalDateTime.now());
+        userMapper.update(user);
     }
 }

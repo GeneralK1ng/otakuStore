@@ -41,13 +41,16 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        //1、从请求头中获取令牌
-        String token = request.getHeader(jwtProperties.getUserTokenName());
-
         // 如果请求的是注册接口，不进行JWT令牌验证
         if (isRegistrationEndpoint(request)) {
             return true;
         }
+
+        log.info("当前请求路径：{}", request.getRequestURI());
+
+        //1、从请求头中获取令牌
+        String token = request.getHeader(jwtProperties.getUserTokenName());
+
 
         //2、校验令牌
         try {
