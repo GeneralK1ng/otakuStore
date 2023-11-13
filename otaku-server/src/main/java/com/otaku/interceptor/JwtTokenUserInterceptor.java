@@ -44,6 +44,11 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
         //1、从请求头中获取令牌
         String token = request.getHeader(jwtProperties.getUserTokenName());
 
+        // 如果请求的是注册接口，不进行JWT令牌验证
+        if (isRegistrationEndpoint(request)) {
+            return true;
+        }
+
         //2、校验令牌
         try {
             log.info("jwt校验:{}", token);
@@ -58,5 +63,11 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
             response.setStatus(401);
             return false;
         }
+    }
+
+    private boolean isRegistrationEndpoint(HttpServletRequest request) {
+        // 根据URL路径规则判断是否是注册接口
+        // 如果注册接口的路径是 "/user/user/register"，可以使用如下判断：
+        return request.getRequestURI().equals("/user/user/register") && request.getMethod().equals("POST");
     }
 }

@@ -49,12 +49,12 @@ public class WeChatUserServiceImpl implements WeChatUserService {
         User user = userMapper.getByOpenId(openid);
 
         //如果是新用户，自动完成注册
-        if(user == null){
-             user = User.builder()
+        if (user == null) {
+            user = User.builder()
                     .openid(openid)
                     .createTime(LocalDateTime.now())
                     .build();
-             userMapper.insert(user);
+            userMapper.insert(user);
         }
 
         //返回这个对象

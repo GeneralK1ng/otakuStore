@@ -1,7 +1,9 @@
 package com.otaku.mapper;
 
 
+import com.otaku.annotation.AutoFill;
 import com.otaku.entity.User;
+import com.otaku.enumeration.OperationType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -39,4 +41,12 @@ public interface UserMapper {
      * @return
      */
     Integer countByMap(Map map);
+
+    /**
+     * 根据用户名查询用户
+     * @param username
+     * @return
+     */
+    @Select("select * from user where username = #{username}")
+    User getByUsername(String username);
 }

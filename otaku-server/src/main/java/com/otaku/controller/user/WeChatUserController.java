@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user/user")
+@RequestMapping("/wxuser/user")
 @Api(tags = "微信端用户相关接口")
 @Slf4j
 public class WeChatUserController {

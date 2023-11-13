@@ -509,6 +509,8 @@ public class OrderServiceImpl implements OrderService {
 
         Orders orders = new Orders();
         orders.setId(ordersDB.getId());
+        // 更新订单状态,状态转为派送中
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
 
         //更新订单状态，状态改变为派送中
         orderMapper.update(orders);

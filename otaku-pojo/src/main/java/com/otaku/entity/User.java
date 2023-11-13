@@ -19,6 +19,11 @@ public class User implements Serializable {
 
     private Long id;
 
+    private String username;
+
+    private String password;
+
+
     //微信用户唯一标识
     private String openid;
 
@@ -38,5 +43,10 @@ public class User implements Serializable {
     private String avatar;
 
     //注册时间
+    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
+
 }
