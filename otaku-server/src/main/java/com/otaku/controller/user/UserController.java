@@ -2,6 +2,7 @@ package com.otaku.controller.user;
 
 
 import com.otaku.constant.JwtClaimsConstant;
+import com.otaku.context.BaseContext;
 import com.otaku.dto.UserDTO;
 import com.otaku.dto.UserLoginDTO;
 import com.otaku.entity.User;
@@ -10,14 +11,12 @@ import com.otaku.result.Result;
 import com.otaku.service.UserService;
 import com.otaku.utils.JwtUtil;
 import com.otaku.vo.UserLoginVO;
+import com.otaku.vo.UserVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +62,7 @@ public class UserController {
     /**
      * 用户注册
      *
-     * @param userDTO 注册时传递的数据模型
+     * @param userDTO 注册时传递的数据
      * @return 返回注册成功的结果
      */
     @PostMapping("/register")
@@ -74,11 +73,40 @@ public class UserController {
         return Result.success();
     }
 
+    /**
+     * 用户更新账号信息
+     *
+     * @param userDTO 注册时传递的数据
+     * @return 返回注册成功的结果
+     */
     @PostMapping("/update")
     @ApiOperation(value = "用户更新账号信息")
     public Result Update(@RequestBody UserDTO userDTO) {
         log.info("用户 {} 更新账号信息", userDTO);
         userService.update(userDTO);
         return Result.success();
+    }
+
+    /**
+     * 根据ID查询用户
+     * 用于数据回显
+     *
+     * @param id 用户ID
+     * @return 返回用户信息
+     */
+    @GetMapping("/{id}")
+    @ApiOperation(value = "根据ID查询用户")
+    public Result<UserVO> getById(@PathVariable Long id) {
+        // 解析令牌，获取用户ID
+        Long userId = BaseContext.getCurrentId();
+
+        // 进行权限校验
+        if (!userId.equals(id)) {
+            // 如果请求的用户ID与令牌中的用户ID不匹配，拒绝访问
+            return Result.error("无权访问该用户数据");
+        }
+        log.info("用户 {} 查询账号信息", id);
+        UserVO userVO = userService.getById(id);
+        return Result.success(userVO);
     }
 }

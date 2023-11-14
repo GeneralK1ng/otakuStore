@@ -8,6 +8,7 @@ import com.otaku.exception.AccountNotFoundException;
 import com.otaku.exception.PasswordErrorException;
 import com.otaku.mapper.UserMapper;
 import com.otaku.service.UserService;
+import com.otaku.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,10 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /**
+     * 用户注册
+     * @param userDTO 用户注册信息
+     */
     @Override
     public void register(UserDTO userDTO) {
         User user = new User();
@@ -63,11 +68,34 @@ public class UserServiceImpl implements UserService {
         userMapper.insert(user);
     }
 
+    /**
+     * 更新用户信息
+     * @param userDTO 用户需要更新的信息
+     */
     @Override
     public void update(UserDTO userDTO) {
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
         user.setUpdateTime(LocalDateTime.now());
         userMapper.update(user);
+    }
+
+    /**
+     * 根据id查询用户信息
+     * @param id 用户id
+     * @return 返回用户信息用于数据回显
+     */
+    @Override
+    public UserVO getById(Long id) {
+        //根据ID查询用户信息
+        User user = userMapper.getById(id);
+        UserVO userVO = new UserVO();
+        if (user!= null) {
+            BeanUtils.copyProperties(user, userVO);
+            userVO.setPassword("******");
+            return userVO;
+        }
+
+        return null;
     }
 }

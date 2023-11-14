@@ -3,6 +3,7 @@ package com.otaku.service;
 import com.otaku.dto.UserDTO;
 import com.otaku.dto.UserLoginDTO;
 import com.otaku.entity.User;
+import com.otaku.vo.UserVO;
 
 public interface UserService {
     /**
@@ -23,4 +24,11 @@ public interface UserService {
      * @param userDTO 用户信息
      */
     void update(UserDTO userDTO);
+
+    /**
+     * 根据ID查询用户信息
+     * @param id 用户ID
+     * @return 返回查询到的用户信息
+     */
+    UserVO getById(Long id);
 }
