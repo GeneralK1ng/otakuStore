@@ -47,7 +47,7 @@ public class PackageController {
      */
     @GetMapping("/product/{id}")
     @ApiOperation("根据套餐id查询包含的产品列表")
-    public Result<List<ProductItemVO>> dishList(@PathVariable("id") Long id) {
+    public Result<List<ProductItemVO>> productList(@PathVariable("id") Long id) {
         List<ProductItemVO> list = packageService.getProductItemById(id);
         return Result.success(list);
     }
