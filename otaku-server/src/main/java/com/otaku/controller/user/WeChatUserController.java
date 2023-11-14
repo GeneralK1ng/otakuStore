@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/wxuser/user")
+@RestController("WechatUserController")
+@RequestMapping("/user/wxuser")
 @Api(tags = "微信端用户相关接口")
 @Slf4j
 public class WeChatUserController {

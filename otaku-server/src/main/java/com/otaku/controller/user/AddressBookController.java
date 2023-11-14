@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController("userAddressBookController")
 @RequestMapping("/user/addressBook")
 @Api(tags = "C端-地址簿接口")
 public class AddressBookController {

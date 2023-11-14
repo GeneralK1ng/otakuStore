@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+/**
+ * 用户相关接口
+ */
+@RestController("userUserController")
 @RequestMapping("user/user")
 @Api(tags = "用户相关接口")
 @Slf4j
@@ -82,6 +85,14 @@ public class UserController {
     @PostMapping("/update")
     @ApiOperation(value = "用户更新账号信息")
     public Result Update(@RequestBody UserDTO userDTO) {
+        // 解析令牌，获取用户ID
+        Long userId = BaseContext.getCurrentId();
+
+        // 进行权限校验
+        if (!userId.equals(userDTO.getId())) {
+            // 如果请求的用户ID与令牌中的用户ID不匹配，拒绝访问
+            return Result.error("无权访问该用户数据");
+        }
         log.info("用户 {} 更新账号信息", userDTO);
         userService.update(userDTO);
         return Result.success();
@@ -105,6 +116,7 @@ public class UserController {
             // 如果请求的用户ID与令牌中的用户ID不匹配，拒绝访问
             return Result.error("无权访问该用户数据");
         }
+
         log.info("用户 {} 查询账号信息", id);
         UserVO userVO = userService.getById(id);
         return Result.success(userVO);

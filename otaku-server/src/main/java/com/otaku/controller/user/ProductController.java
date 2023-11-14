@@ -1,7 +1,9 @@
 package com.otaku.controller.user;
 
 import com.otaku.constant.StatusConstant;
+import com.otaku.dto.ProductPageQueryDTO;
 import com.otaku.entity.Product;
+import com.otaku.result.PageResult;
 import com.otaku.result.Result;
 import com.otaku.service.ProductService;
 import com.otaku.vo.ProductVO;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
-@RestController("userDishController")
+@RestController("userProductController")
 @RequestMapping("/user/product")
 @Slf4j
 @Api(tags = "C端-产品浏览接口")
@@ -56,6 +58,20 @@ public class ProductController {
 
             return Result.success(list);
         }
+    }
+
+    /**
+     * 产品分页查询
+     *
+     * @param productPageQueryDTO 分页查询数据
+     * @return 分页查询结果
+     */
+    @GetMapping("/page")
+    @ApiOperation(value = "产品分页查询")
+    public Result<PageResult> page(ProductPageQueryDTO productPageQueryDTO) {
+        log.info("产品分页查询：{}", productPageQueryDTO);
+        PageResult pageResult = productService.pageQuery(productPageQueryDTO);
+        return Result.success(pageResult);
     }
 
 }

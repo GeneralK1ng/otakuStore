@@ -16,6 +16,7 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
@@ -48,6 +49,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
                 .excludePathPatterns("/user/user/login")
+                .excludePathPatterns("/user/wxuser/login")
                 .excludePathPatterns("/user/shop/status");
     }
 
@@ -60,7 +62,9 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         log.info("准备开始生成接口文档");
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("otakuStore项目接口文档")
-                .version("2.0")
+                .license("General_K1ng")
+                .contact(new Contact("General_K1ng","generalk1ng.github.io","General_K1ng@outlook.com"))
+                .version("1.0")
                 .description("otakuStore项目接口文档")
                 .build();
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
@@ -78,7 +82,9 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         log.info("准备开始生成接口文档");
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("otakuStore项目接口文档")
-                .version("2.0")
+                .license("General_K1ng")
+                .contact(new Contact("General_K1ng","generalk1ng.github.io","General_K1ng@outlook.com"))
+                .version("1.0")
                 .description("otakuStore项目接口文档")
                 .build();
         Docket docket = new Docket(DocumentationType.SWAGGER_2)

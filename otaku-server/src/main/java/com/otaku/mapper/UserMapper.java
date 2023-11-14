@@ -24,7 +24,6 @@ public interface UserMapper {
      * 插入用户
      * @param user
      */
-    @AutoFill(value = OperationType.INSERT)
     void insert(User user);
 
     /**
@@ -52,7 +51,7 @@ public interface UserMapper {
     User getByUsername(String username);
 
     /**
-     * 更新用户
+     * 更新用户信息
      * @param user
      */
     void update(User user);

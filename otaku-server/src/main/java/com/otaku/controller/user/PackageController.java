@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
-@RestController("userSetmealController")
-@RequestMapping("/user/setmeal")
+@RestController("userPackageController")
+@RequestMapping("/user/package")
 @Api(tags = "C端-套餐浏览接口")
 public class PackageController {
     @Autowired
