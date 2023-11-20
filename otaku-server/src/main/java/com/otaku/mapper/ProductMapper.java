@@ -89,4 +89,12 @@ public interface ProductMapper {
      * @return 返回满足给定条件的产品数量。
      */
     Integer countByMap(Map<String, Object> map);
+
+    /**
+     * 根据名称查询产品
+     * @param name 需要查询的产品名称
+     * @return 返回 Product 对象
+     */
+    @Select("select * from product where name = #{name}")
+    Product getByName(String name);
 }

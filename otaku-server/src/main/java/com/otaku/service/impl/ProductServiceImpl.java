@@ -18,6 +18,7 @@ import com.otaku.result.PageResult;
 import com.otaku.service.ProductService;
 import com.otaku.vo.ProductVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,10 @@ public class ProductServiceImpl implements ProductService {
     private PackageProductMapper packageProductMapper;
     @Autowired
     private PackageMapper packageMapper;
+
     /**
      * 新增产品和对应的偏好
+     *
      * @param productDTO
      */
     @Override
@@ -49,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = new Product();
         //对象数据拷贝
-        BeanUtils.copyProperties(productDTO,product);
+        BeanUtils.copyProperties(productDTO, product);
 
         //向产品表插入1条数据
         productMapper.insert(product);
@@ -58,9 +61,9 @@ public class ProductServiceImpl implements ProductService {
         Long productId = product.getId();
 
         List<ProductFlavor> flavors = productDTO.getFlavors();
-        if (flavors != null && !flavors.isEmpty()){
+        if (flavors != null && !flavors.isEmpty()) {
             flavors.forEach(productFlavor -> {
-                productFlavor.setProductId(productId) ;
+                productFlavor.setProductId(productId);
             });
             //向偏好表插入n条数据
             productFlavorMapper.insertBatch(flavors);
@@ -69,21 +72,23 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 产品分页查询
+     *
      * @param productPageQueryDTO
      * @return
      */
     @Override
     public PageResult pageQuery(ProductPageQueryDTO productPageQueryDTO) {
         //开始分页
-        PageHelper.startPage(productPageQueryDTO.getPage(),productPageQueryDTO.getPageSize());
+        PageHelper.startPage(productPageQueryDTO.getPage(), productPageQueryDTO.getPageSize());
         //获取page对象
         Page<ProductVO> page = productMapper.pageQuery(productPageQueryDTO);
 
-        return new PageResult(page.getTotal(),page.getResult());
+        return new PageResult(page.getTotal(), page.getResult());
     }
 
     /**
      * 产品批量删除
+     *
      * @param ids 传入要删除的ID表
      */
     @Override
@@ -91,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
         //判断当前产品是否能够删除——是否存在正在售卖的产品，即 status=1 的产品
         for (Long id : ids) {
             Product product = productMapper.getById(id);
-            if (product.getStatus().equals(StatusConstant.ENABLE)){
+            if (product.getStatus().equals(StatusConstant.ENABLE)) {
                 //当前产品处于售卖中
                 throw new DeletionNotAllowedException(MessageConstant.PRODUCT_ON_SALE);
             }
@@ -99,8 +104,8 @@ public class ProductServiceImpl implements ProductService {
 
         //判断当前产品是否能够删除——当前产品是否被套餐绑定，如过被绑定也无法删除
         List<Long> packageIds = packageProductMapper.getPackageIdsByProductIds(ids);
-        
-        if (!packageIds.isEmpty()){
+
+        if (!packageIds.isEmpty()) {
             //当前产品被套餐绑定，无法删除
             throw new DeletionNotAllowedException(MessageConstant.PRODUCT_BE_RELATED_BY_PACKAGE);
         }
@@ -122,6 +127,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 根据ID查询产品信息和对应的偏好数据
+     *
      * @param id 要查询产品信息的ID
      * @return 返回查询到的数据
      */
@@ -133,7 +139,7 @@ public class ProductServiceImpl implements ProductService {
         List<ProductFlavor> productFlavors = productFlavorMapper.getByProductId(id);
         //将查询到的数据封装到productVO
         ProductVO productVO = new ProductVO();
-        BeanUtils.copyProperties(product,productVO);
+        BeanUtils.copyProperties(product, productVO);
         productVO.setFlavors(productFlavors);
 
         return productVO;
@@ -141,13 +147,14 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 根据ID修改产品基本信息和偏好数据
+     *
      * @param productDTO 产品DTO
      */
     @Override
     public void updateWithFlavor(ProductDTO productDTO) {
 
         Product product = new Product();
-        BeanUtils.copyProperties(productDTO,product);
+        BeanUtils.copyProperties(productDTO, product);
 
         //修改产品的基本信息
         productMapper.update(product);
@@ -155,9 +162,10 @@ public class ProductServiceImpl implements ProductService {
         productFlavorMapper.deleteByProductId(productDTO.getId());
         //重新插入偏好数据
         List<ProductFlavor> flavors = productDTO.getFlavors();
-        if (flavors != null && !flavors.isEmpty()){
+        if (flavors != null && !flavors.isEmpty()) {
             flavors.forEach(productFlavor -> {
-                productFlavor.setProductId(productDTO.getId()); ;
+                productFlavor.setProductId(productDTO.getId());
+                ;
             });
             //向偏好表插入n条数据
             productFlavorMapper.insertBatch(flavors);
@@ -166,6 +174,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 根据分类ID查询产品
+     *
      * @param categoryId 分类的ID
      * @return 该分类ID下的产品
      */
@@ -182,7 +191,7 @@ public class ProductServiceImpl implements ProductService {
      * 启用或停用产品。
      *
      * @param status 产品状态，1表示启用，0表示停用
-     * @param id 产品ID
+     * @param id     产品ID
      */
     @Override
     @Transactional
@@ -197,13 +206,13 @@ public class ProductServiceImpl implements ProductService {
         // 记录产品状态更新日志
         log.info("产品状态更新成功：ID={}, 新状态={}", id, status);
 
-        if (Objects.equals(status, StatusConstant.DISABLE)){
+        if (Objects.equals(status, StatusConstant.DISABLE)) {
             // 如果是停售操作，还需要将包含当前产品的套餐也停售
             List<Long> productIds = new ArrayList<>();
             productIds.add(id);
             // 获取包含当前产品的套餐列表
             List<Long> packageIds = packageProductMapper.getPackageIdsByProductIds(productIds);
-            if (!packageIds.isEmpty()){
+            if (!packageIds.isEmpty()) {
                 for (Long packageId : packageIds) {
                     // 创建套餐对象，用于更新套餐状态
                     Package aPackage = Package.builder()
@@ -232,12 +241,38 @@ public class ProductServiceImpl implements ProductService {
 
         for (Product p : productList) {
             ProductVO productVO = new ProductVO();
-            BeanUtils.copyProperties(p,productVO);
+            BeanUtils.copyProperties(p, productVO);
 
             //根据产品id查询对应的口味
             List<ProductFlavor> flavors = productFlavorMapper.getByProductId(p.getId());
 
             productVO.setFlavors(flavors);
+            productVOList.add(productVO);
+        }
+
+        return productVOList;
+    }
+
+    @Override
+    public List<ProductVO> getByNameList(String nameList) {
+        // 从 nameList 中获取产品名称列表
+        String[] names = nameList.split(",");
+
+        Product[] products = new Product[names.length];
+        for (int i = 0; i < names.length; i++) {
+            products[i] = Product.builder()
+                    .name(names[i])
+                    .status(StatusConstant.ENABLE)
+                    .build();
+        }
+
+        List<ProductVO> productVOList = new ArrayList<>();
+
+        for (Product product : products) {
+            product = productMapper.getByName(product.getName());
+            ProductVO productVO = new ProductVO();
+            BeanUtils.copyProperties(product, productVO);
+            productVO.setPurchasePrice(null);
             productVOList.add(productVO);
         }
 

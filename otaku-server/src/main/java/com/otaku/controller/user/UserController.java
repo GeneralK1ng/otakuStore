@@ -121,4 +121,15 @@ public class UserController {
         UserVO userVO = userService.getById(id);
         return Result.success(userVO);
     }
+
+    /**
+     * 用户退出
+     *
+     * @return 返回退出成功的结果
+     */
+    @GetMapping("/logout")
+    @ApiOperation(value = "用户退出")
+    public Result logout() {
+        return Result.success();
+    }
 }

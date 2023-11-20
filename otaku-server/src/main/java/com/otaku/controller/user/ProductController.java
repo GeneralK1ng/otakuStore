@@ -6,15 +6,20 @@ import com.otaku.entity.Product;
 import com.otaku.result.PageResult;
 import com.otaku.result.Result;
 import com.otaku.service.ProductService;
+import com.otaku.service.ReportService;
 import com.otaku.vo.ProductVO;
+import com.otaku.vo.SalesTop10ReportVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController("userProductController")
@@ -27,6 +32,9 @@ public class ProductController {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private ReportService reportService;
     /**
      * 根据分类id查询产品
      *
@@ -72,6 +80,28 @@ public class ProductController {
         log.info("产品分页查询：{}", productPageQueryDTO);
         PageResult pageResult = productService.pageQuery(productPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+
+    /**
+     * 获取指定日期范围内的销量排名前10的报告数据。
+     *
+     * @param begin 查询的开始日期，采用 "yyyy-MM-dd" 格式。
+     * @param end 查询的结束日期，采用 "yyyy-MM-dd" 格式。
+     * @return 返回包含销量排名前10的报告数据的 Result 对象。
+     */
+    @GetMapping("/top10")
+    @ApiOperation(value = "近期销量榜前10")
+    public Result<List<ProductVO>> top10(
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
+        log.info("销量排名top10统计：{}，{}", begin, end);
+        SalesTop10ReportVO Top10 = reportService.getSalesTop10Statistics(begin, end);
+        if (Top10!= null) {
+            List<ProductVO> list = productService.getByNameList(Top10.getNameList());
+            return Result.success(list);
+        }
+        return Result.success();
     }
 
 }

@@ -64,4 +64,10 @@ public interface ProductService {
      */
     void startOrStop(Integer status, Long id);
 
+    /**
+     * 根据产品名称列表查询产品
+     * @param nameList 以逗号分隔的字符串
+     * @return 产品列表
+     */
+    List<ProductVO> getByNameList(String nameList);
 }
