@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Mapper
 public interface CheckinMapper {
@@ -28,4 +29,11 @@ public interface CheckinMapper {
      */
     @Select("select * from checkin where user_id = #{checkinDTO.userId} and checkin_date = #{checkinDTO.checkinDate}")
     Checkin existsCheckinRecordForDate(@Param("checkinDTO") CheckinDTO checkinDTO);
+
+    /**
+     * 获取用户签到日期
+     * @param userId 用户ID
+     * @return 签到日期
+     */
+    List<LocalDate> getCheckinDates(Long userId);
 }
