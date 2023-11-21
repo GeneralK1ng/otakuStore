@@ -1,5 +1,6 @@
 package com.otaku.service.impl;
 
+import com.otaku.dto.CheckinDTO;
 import com.otaku.entity.Checkin;
 import com.otaku.exception.AlreadyCheckinException;
 import com.otaku.exception.UserDoesNotExistException;
@@ -33,11 +34,16 @@ public class CheckinServiceImpl implements CheckinService {
         }
 
         // 根据 userId 和当前日期查询用户当日是否已经签到
-        boolean isCheckin = checkinMapper.existsCheckinRecordForDate(userId, currentDate);
+        CheckinDTO checkinDTO = new CheckinDTO();
+        checkinDTO.setUserId(userId);
+        checkinDTO.setCheckinDate(currentDate);
+
+        Checkin checkin = checkinMapper.existsCheckinRecordForDate(checkinDTO);
+        boolean isCheckin = checkin!= null;
 
         if (!isCheckin) {
             // 如果用户没有签到过，则进行签到操作
-            Checkin checkin = new Checkin();
+            checkin = new Checkin();
             checkin.setUserId(userId);
             checkin.setCheckinDate(currentDate);
             checkin.setCheckinTime(LocalTime.now());

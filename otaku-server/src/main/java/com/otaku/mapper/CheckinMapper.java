@@ -1,8 +1,10 @@
 package com.otaku.mapper;
 
+import com.otaku.dto.CheckinDTO;
 import com.otaku.entity.Checkin;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDate;
@@ -21,10 +23,9 @@ public interface CheckinMapper {
 
     /**
      * 判断用户是否签到
-     * @param userId 用户ID
-     * @param currentDate 签到日期
-     * @return true：已签到，false：未签到
+     * @param checkinDTO 签到记录
+     * @return 签到记录
      */
-    @Select("select * from checkin where user_id = #{userId} and checkin_date = #{checkinDate}")
-    boolean existsCheckinRecordForDate(Long userId, LocalDate currentDate);
+    @Select("select * from checkin where user_id = #{checkinDTO.userId} and checkin_date = #{checkinDTO.checkinDate}")
+    Checkin existsCheckinRecordForDate(@Param("checkinDTO") CheckinDTO checkinDTO);
 }

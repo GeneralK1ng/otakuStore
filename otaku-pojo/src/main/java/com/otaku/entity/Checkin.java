@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -13,9 +14,9 @@ import java.time.LocalTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Checkin {
+public class Checkin implements Serializable {
     // 主键
-    private Long id;
+    private Long checkinId;
 
     // 用户id
     private Long userId;
