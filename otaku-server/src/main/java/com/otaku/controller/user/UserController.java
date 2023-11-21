@@ -150,6 +150,6 @@ public class UserController {
     public Result checkin(@RequestParam("userId") Long userId) {
         checkinService.checkin(userId);
         log.info("用户 {} 已签到", userId);
-        return Result.success();
+        return Result.success("已签到");
     }
 }
