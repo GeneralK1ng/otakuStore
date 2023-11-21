@@ -8,6 +8,7 @@ import com.otaku.dto.UserLoginDTO;
 import com.otaku.entity.User;
 import com.otaku.properties.JwtProperties;
 import com.otaku.result.Result;
+import com.otaku.service.CheckinService;
 import com.otaku.service.UserService;
 import com.otaku.utils.JwtUtil;
 import com.otaku.vo.UserLoginVO;
@@ -32,8 +33,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private JwtProperties jwtProperties;
+
+    @Autowired
+    private CheckinService checkinService;
 
     /**
      * 用户登录
@@ -50,7 +55,7 @@ public class UserController {
 
         //为用户生成专用的令牌
         Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.USER_ID,user.getId());
+        claims.put(JwtClaimsConstant.USER_ID, user.getId());
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
 
         UserLoginVO userLoginVO = UserLoginVO.builder()
@@ -130,6 +135,21 @@ public class UserController {
     @GetMapping("/logout")
     @ApiOperation(value = "用户退出")
     public Result logout() {
+        return Result.success();
+    }
+
+
+    /**
+     * 用户签到
+     *
+     * @param userId 用户ID
+     * @return 返回签到成功的结果
+     */
+    @PostMapping("/checkin")
+    @ApiOperation(value = "用户签到")
+    public Result checkin(@RequestParam("userId") Long userId) {
+        checkinService.checkin(userId);
+        log.info("用户 {} 已签到", userId);
         return Result.success();
     }
 }
