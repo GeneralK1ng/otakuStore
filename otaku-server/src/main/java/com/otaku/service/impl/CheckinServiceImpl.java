@@ -1,7 +1,6 @@
 package com.otaku.service.impl;
 
 import com.otaku.constant.StatusConstant;
-import com.otaku.context.BaseContext;
 import com.otaku.dto.CheckinDTO;
 import com.otaku.dto.UserPointRewardDTO;
 import com.otaku.entity.Checkin;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -69,7 +67,7 @@ public class CheckinServiceImpl implements CheckinService {
             // 插入签到记录到数据库
             checkinMapper.insertCheckinRecord(checkin);
 
-            // TODO 进行签到后的其他逻辑，比如给用户发放积分等
+            // 进行签到后的其他逻辑，比如给用户发放积分等
             issuePointReward(userId);
 
         } else {
@@ -100,7 +98,10 @@ public class CheckinServiceImpl implements CheckinService {
         userPointRewardDTO.setUserId(userId);
         userPointRewardDTO.setQuantity(pointReward);
 
+        // 创建背包数据对象
         UserBackpack userBackpack = new UserBackpack();
+
+        // 将积分奖励对象转换为背包数据对象
         BeanUtils.copyProperties(userPointRewardDTO, userBackpack);
         userBackpack.setItemId(UserPointRewardDTO.itemId);
         userBackpack.setStatus(StatusConstant.DEFAULT);
@@ -111,6 +112,7 @@ public class CheckinServiceImpl implements CheckinService {
         // 给用户增加积分
         // 添加一条背包数据
         backpackMapper.insertPoint(userBackpack);
+        log.info("用户 {} 签到成功，连续签到天数 {}，积分奖励 {}，积分记录ID {}", userId, consecutiveDays, pointReward, idempotentId);
     }
 
     /**
@@ -120,7 +122,7 @@ public class CheckinServiceImpl implements CheckinService {
      */
     private int calculatePointReward(int consecutiveDays) {
         // 根据连续签到天数计算积分奖励的逻辑
-        if (consecutiveDays >= 1 && consecutiveDays <= 5) {
+        if (consecutiveDays >= 0 && consecutiveDays <= 5) {
             return 5;
         } else if (consecutiveDays <= 10) {
             return 10;

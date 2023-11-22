@@ -4,9 +4,11 @@ package com.otaku.mapper;
 import com.otaku.annotation.AutoFill;
 import com.otaku.entity.User;
 import com.otaku.enumeration.OperationType;
+import com.otaku.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -55,4 +57,11 @@ public interface UserMapper {
      * @param user
      */
     void update(User user);
+
+    /**
+     * 根据用户ID列表查询用户
+     * @param userIds
+     * @return
+     */
+    List<UserVO> listByIds(List<Long> userIds);
 }

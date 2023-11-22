@@ -1,16 +1,17 @@
 package com.otaku.controller.admin;
 
 import com.otaku.dto.BagItemDTO;
+import com.otaku.dto.BagItemPageQueryDTO;
+import com.otaku.result.PageResult;
 import com.otaku.result.Result;
 import com.otaku.service.BackpackItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/backpack")
@@ -33,5 +34,25 @@ public class BackpackItemController {
         backpackItemService.save(bagItemDTO);
 
         return Result.success();
+    }
+
+    /**
+     * 管理端批量删除背包物品
+     * @param ids 物品id列表
+     *              注意：物品id列表不能为null
+     * @return 操作结果
+     */
+    public Result delete(@RequestParam List<Long> ids) {
+        log.info("批量删除背包物品 {}", ids);
+        backpackItemService.deleteBatch(ids);
+        return Result.success();
+    }
+
+    @GetMapping("/page")
+    @ApiOperation(value = "分页查询背包物品")
+    public Result<PageResult> pageQuery(BagItemPageQueryDTO bagItemPageQueryDTO) {
+        log.info("分页查询背包物品 {}", bagItemPageQueryDTO);
+        PageResult pageResult = backpackItemService.pageQuery(bagItemPageQueryDTO);
+        return Result.success(pageResult);
     }
 }

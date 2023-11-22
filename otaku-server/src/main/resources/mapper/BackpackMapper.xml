@@ -4,5 +4,21 @@
 <mapper namespace="com.otaku.mapper.BackpackMapper">
 
 
+    <insert id="insertPoint">
+        INSERT INTO user_backpack (user_id, item_id, quantity, status, idempotent)
+        VALUES (
+                   #{u.userId},
+                   #{u.itemId},
+                   #{u.quantity},
+                   #{u.status},
+                   #{u.idempotent}
+               )
+    </insert>
 
+    <delete id="deleteBatchByItemIds">
+        delete from user_backpack where item_id
+        <foreach collection="itemIds" open="(" close=")" separator="," item="itemId">
+            #{productId}
+        </foreach>
+    </delete>
 </mapper>

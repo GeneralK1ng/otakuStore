@@ -52,4 +52,12 @@
         </set>
         where id = #{id}
     </update>
+
+    <select id="listByIds" resultType="com.otaku.vo.UserVO">
+        SELECT * FROM user
+        WHERE id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
 </mapper>

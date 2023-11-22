@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.otaku.mapper.BackpackItemMapper">
+
+
+    <delete id="deleteBatch">
+        delete from item_config
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="pageQuery" resultType="com.otaku.vo.BagItemVO">
+        SELECT
+        i.*,
+        COUNT(ub.id) AS userCount
+        FROM
+        item_config i
+        LEFT JOIN
+        otaku_store.user_backpack ub ON ub.item_id = i.id
+        <where>
+            <if test="name != null" >
+                AND i.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+        </where>
+        GROUP BY
+        i.id, i.create_time
+        ORDER BY
+        i.create_time DESC
+    </select>
+</mapper>

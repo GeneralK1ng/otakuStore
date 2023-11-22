@@ -1,11 +1,11 @@
 package com.otaku.mapper;
 
-import com.otaku.dto.UserPointRewardDTO;
 import com.otaku.entity.UserBackpack;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface BackpackMapper {
@@ -15,8 +15,21 @@ public interface BackpackMapper {
      *
      * @param userBackpack 用户背包数据
      */
-    @Insert("insert into user_backpack" +
-            "        (user_id, item_id, quantity, status, idempotent)" +
-            "        values (#{u.userId}, #{u.itemId}, #{u.quantity}, #{u.status}, #{u.idempotent})")
     void insertPoint(@Param("u") UserBackpack userBackpack);
+
+    /**
+     * 根据物品id删除
+     *
+     * @param itemIds 物品id
+     */
+    void deleteBatchByItemIds(List<Long> itemIds);
+
+    /**
+     * 根据物品id查询用户id
+     *
+     * @param id 物品id
+     * @return 用户id
+     */
+    @Select("select user_id from user_backpack where item_id = #{id}")
+    List<Long> getUserIdsByItemId(Long id);
 }
