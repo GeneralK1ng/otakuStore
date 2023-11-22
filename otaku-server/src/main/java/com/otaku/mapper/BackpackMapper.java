@@ -32,4 +32,13 @@ public interface BackpackMapper {
      */
     @Select("select user_id from user_backpack where item_id = #{id}")
     List<Long> getUserIdsByItemId(Long id);
+
+    /**
+     * 根据物品id查询用户数量
+     *
+     * @param ids 物品id
+     * @return 用户id
+     */
+    @Select("select count(1) from user_backpack where item_id in (#{ids})")
+    int countByItemIds(List<Long> ids);
 }

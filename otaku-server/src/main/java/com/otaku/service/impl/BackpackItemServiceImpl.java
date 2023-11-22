@@ -60,8 +60,11 @@ public class BackpackItemServiceImpl implements BackpackItemService {
             // 批量删除背包物品
             backpackItemMapper.deleteBatch(ids);
 
-            // 批量删除用户拥有的该物品
-            backpackMapper.deleteBatchByItemIds(ids);
+            // 判断背包物品是否关联了用户
+            if (backpackMapper.countByItemIds(ids) > 0) {
+                // 批量删除背包物品
+                backpackMapper.deleteBatchByItemIds(ids);
+            }
         }
     }
 
