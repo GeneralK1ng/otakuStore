@@ -10,4 +10,8 @@ public class StatusConstant {
 
     //禁用
     public static final Integer DISABLE = 0;
+
+    //默认
+    public static final Integer DEFAULT = 2;
+
 }

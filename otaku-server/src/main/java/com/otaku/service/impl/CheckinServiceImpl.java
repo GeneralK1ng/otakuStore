@@ -1,21 +1,28 @@
 package com.otaku.service.impl;
 
+import com.otaku.constant.StatusConstant;
+import com.otaku.context.BaseContext;
 import com.otaku.dto.CheckinDTO;
 import com.otaku.dto.UserPointRewardDTO;
 import com.otaku.entity.Checkin;
+import com.otaku.entity.UserBackpack;
 import com.otaku.exception.AlreadyCheckinException;
 import com.otaku.exception.UserDoesNotExistException;
 import com.otaku.mapper.CheckinMapper;
-import com.otaku.mapper.UserBackpackMapper;
+import com.otaku.mapper.BackpackMapper;
 import com.otaku.mapper.UserMapper;
 import com.otaku.service.CheckinService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -28,13 +35,14 @@ public class CheckinServiceImpl implements CheckinService {
     private UserMapper userMapper;
 
     @Autowired
-    private UserBackpackMapper userBackpackMapper;
+    private BackpackMapper backpackMapper;
 
     /**
      * 用户签到
      * @param userId 用户ID
      */
     @Override
+    @Transactional
     public void checkin(Long userId) {
         // 获取当前的日期
         LocalDate currentDate = LocalDate.now();
@@ -90,11 +98,19 @@ public class CheckinServiceImpl implements CheckinService {
         // 创建添加积分对象
         UserPointRewardDTO userPointRewardDTO = new UserPointRewardDTO();
         userPointRewardDTO.setUserId(userId);
-        userPointRewardDTO.setPoint(pointReward);
+        userPointRewardDTO.setQuantity(pointReward);
+
+        UserBackpack userBackpack = new UserBackpack();
+        BeanUtils.copyProperties(userPointRewardDTO, userBackpack);
+        userBackpack.setItemId(UserPointRewardDTO.itemId);
+        userBackpack.setStatus(StatusConstant.DEFAULT);
+
+        String idempotentId = UUID.randomUUID().toString();
+        userBackpack.setIdempotent(idempotentId);
 
         // 给用户增加积分
-        userBackpackMapper.updatePoint(userPointRewardDTO);
-
+        // 添加一条背包数据
+        backpackMapper.insertPoint(userBackpack);
     }
 
     /**

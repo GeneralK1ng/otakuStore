@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
         user.setCreateTime(LocalDateTime.now());
         userMapper.insert(user);
+
     }
 
     /**

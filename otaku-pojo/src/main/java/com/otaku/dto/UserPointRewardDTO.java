@@ -6,9 +6,13 @@ import java.io.Serializable;
 @Data
 public class UserPointRewardDTO implements Serializable {
 
+    // 用户ID
     private Long userId;
 
-    private Integer point;
+    // 积分
+    private Integer quantity;
 
-    private static final Integer type = 1;
+    // 物品类型
+    public static final Long itemId = 1L;
+
 }
