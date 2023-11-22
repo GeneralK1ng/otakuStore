@@ -42,6 +42,8 @@ public class BackpackItemController {
      *              注意：物品id列表不能为null
      * @return 操作结果
      */
+    @DeleteMapping("/delete")
+    @ApiOperation(value = "管理端批量删除背包物品")
     public Result delete(@RequestParam List<Long> ids) {
         log.info("批量删除背包物品 {}", ids);
         backpackItemService.deleteBatch(ids);
