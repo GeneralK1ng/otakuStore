@@ -50,6 +50,11 @@ public class BackpackItemController {
         return Result.success();
     }
 
+    /**
+     * 分页查询背包物品
+     * @param bagItemPageQueryDTO 查询条件
+     * @return 操作结果
+     */
     @GetMapping("/page")
     @ApiOperation(value = "分页查询背包物品")
     public Result<PageResult> pageQuery(BagItemPageQueryDTO bagItemPageQueryDTO) {

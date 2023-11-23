@@ -148,8 +148,18 @@ public class UserController {
     @PostMapping("/checkin")
     @ApiOperation(value = "用户签到")
     public Result checkin(@RequestParam("userId") Long userId) {
+        // 解析令牌，获取用户ID
+        Long currentId = BaseContext.getCurrentId();
+
+        // 进行权限校验
+        if (!currentId.equals(userId)) {
+            // 如果请求的用户ID与令牌中的用户ID不匹配，拒绝访问
+            return Result.error("无权访问该用户数据");
+        }
+
         checkinService.checkin(userId);
         log.info("用户 {} 已签到", userId);
         return Result.success("已签到");
     }
+
 }
